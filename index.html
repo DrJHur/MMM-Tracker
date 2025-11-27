@@ -204,14 +204,33 @@
         
         const appId = 'my-mind-mirror-mmm-prod'; // 앱 이름 변경에 맞춰 ID 변경
         const firebaseConfig = {
-            // 💡 [여기에 실제 Firebase 설정 객체를 붙여넣으세요 (apiKey, authDomain, projectId 등)] 
-            // 예시 (반드시 사용자님의 정보로 대체해야 합니다):
-            // apiKey: "YOUR_API_KEY",
-            // authDomain: "your-project.firebaseapp.com",
-            // projectId: "your-project-id",
-            // storageBucket: "your-project.appspot.com",
-            // messagingSenderId: "...",
-            // appId: "..."
+            // Firebase SDK의 각 모듈을 가져옵니다.
+// 필요한 서비스에 따라 추가하거나 제거할 수 있습니다.
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+// ... 다른 Firebase 서비스도 이와 같이 가져올 수 있습니다.
+
+// Firebase 콘솔에서 얻은 프로젝트 구성 객체입니다.
+// 이 정보는 실제 앱에서 직접 노출되지 않도록 주의해야 합니다.
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID", // 예: "mmm-project-13fb3"
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "G-YOUR_MEASUREMENT_ID" // Google Analytics가 활성화된 경우
+};
+
+// Firebase 앱을 초기화합니다.
+const app = initializeApp(firebaseConfig);
+
+// 초기화된 앱에서 특정 서비스를 가져옵니다.
+const db = getFirestore(app); // Cloud Firestore
+const auth = getAuth(app);   // Firebase Authentication
+
+// 이제 'db' 및 'auth' 객체를 사용하여 해당 Firebase 서비스를 호출할 수 있습니다.
         };
 
         // --- 전역 변수 설정 ---
