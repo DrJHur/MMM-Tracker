@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 제목 변경: My Mind Mirror (MMM) -->
+    <title>My Mind Mirror (MMM)</title>
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN for graphing -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        /* Custom scrollbar for better aesthetics */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #a7f3d0; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background-color: #f7f7f7; }
+
+        /* Updated Background Gradient: Slightly more vivid pastel colors */
+        body {
+            /* 연보라(#e6d6ff), 연두(#d6ffe1), 연노랑(#fff5d6), 연핑크(#ffd6e6) */
+            background: linear-gradient(135deg, #e6d6ff 0%, #d6ffe1 25%, #fff5d6 50%, #ffd6e6 75%);
+            background-attachment: fixed; 
+        }
+        
+        /* Unified Color Palette: Very light Sky for card backgrounds (lighter than Sky 100) */
+        .phq-card-color, .gad-card-color, .pss-card-color { 
+            background-color: #f0f8ff; /* Very light azure/sky for a softer look */ 
+        }
+        
+        /* Pretendard Font Application */
+        .font-sans { 
+            font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+        }
+
+        /* Ensure Canvas element height is flexible within its container */
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body class="font-sans min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
+    
+    <!-- Cloud Motif Background Elements (몽실몽실 흰 구름 느낌) -->
+    <div class="cloud-motif absolute bg-white rounded-full opacity-60 w-64 h-64 -top-10 -left-10 blur-3xl shadow-xl animate-pulse" style="animation-delay: 0s;"></div>
+    <div class="cloud-motif absolute bg-white rounded-full opacity-40 w-96 h-96 -bottom-32 -right-32 blur-3xl shadow-2xl animate-pulse" style="animation-delay: 2s;"></div>
+    <div class="cloud-motif absolute bg-white rounded-full opacity-50 w-48 h-48 top-1/4 left-1/3 blur-2xl shadow-lg animate-pulse" style="animation-delay: 4s;"></div>
+
+    <!-- Main Container -->
+    <div id="app" class="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-2xl rounded-2xl p-6 md:p-10 border border-gray-100 relative z-10 my-8">
+
+        <!-- Title and Cloud Wrapper -->
+        <div class="relative mb-8 pt-4"> 
+            <!-- New Cloud Element (Behind the Title) -->
+            <div class="absolute inset-x-0 -top-6 flex justify-center items-center z-0 opacity-80 pointer-events-none">
+                <!-- Simple SVG Cloud for aesthetic backdrop -->
+                <svg class="w-96 h-48 text-white fill-current blur-md shadow-lg" viewBox="0 0 100 40" preserveAspectRatio="none">
+                    <path d="M 5 25 C 5 10, 20 5, 30 10 S 45 5, 60 10 S 75 5, 90 15 C 95 25, 80 35, 70 30 C 70 35, 60 38, 50 35 C 40 38, 30 35, 30 30 C 20 35, 15 30, 10 25 Z" />
+                </svg>
+            </div>
+
+            <!-- Title Change - Centered -->
+            <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center relative z-10">My Mind Mirror (MMM)</h1>
+            <!-- Text Change - Centered -->
+            <p class="text-sm text-gray-500 text-center relative z-10">1주일에 한 번 씩 심리검사를 통해 마음의 변화를 확인하세요.</p>
+        </div>
+
+        <!-- User Info & Loading -->
+        <div class="mb-6 flex justify-between items-center text-sm">
+            <div id="user-info" class="text-gray-600">
+                <p>사용자 ID: <span id="display-user-id" class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">인증 필요</span></p>
+                <p class="mt-1">인증 상태: <span id="auth-status" class="font-semibold text-red-500">인증 로드 중...</span></p>
+            </div>
+            <div id="loading-indicator" class="hidden flex items-center space-x-2 text-blue-500">
+                <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span>처리 중...</span>
+            </div>
+        </div>
+
+        <!-- Authentication Prompt/Blocker -->
+        <div id="auth-blocker" class="hidden mb-6 p-6 bg-red-50 border border-red-300 rounded-xl">
+            <h3 class="font-bold text-lg text-red-700 mb-2">🚨 인증 필수</h3>
+            <p class="text-red-600">개인 데이터의 안전한 저장을 위해 로그인/회원가입이 필요합니다. Firebase Authentication을 활성화하고 로그인 UI를 추가해주세요. 현재 기능이 비활성화되었습니다.</p>
+            <!-- In a real app, a login/signup form would go here -->
+        </div>
+
+        <!-- Assessment Buttons (Unified Sky Blue - Lighter 400) -->
+        <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <!-- Unified Sky Blue Button -->
+            <button data-scale="PHQ9" class="p-4 rounded-xl text-white font-semibold shadow-lg transition-transform transform hover:scale-[1.02] bg-sky-400 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                PHQ-9 (우울) 측정
+            </button>
+            <!-- Unified Sky Blue Button -->
+            <button data-scale="GAD7" class="p-4 rounded-xl text-white font-semibold shadow-lg transition-transform transform hover:scale-[1.02] bg-sky-400 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                GAD-7 (불안) 측정
+            </button>
+            <!-- Unified Sky Blue Button -->
+            <button data-scale="PSS" class="p-4 rounded-xl text-white font-semibold shadow-lg transition-transform transform hover:scale-[1.02] bg-sky-400 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                PSS (스트레스) 측정
+            </button>
+        </div>
+
+        <!-- Error Message Area -->
+        <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6" role="alert">
+            <strong class="font-bold">오류 발생:</strong>
+            <span id="error-text" class="block sm:inline"></span>
+        </div>
+
+        <!-- Chart Section (Now individual charts) -->
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+            <!-- Subtitle Change - Added text-center -->
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">마음의 파고</h2>
+            
+            <div id="chart-caption" class="text-center text-sm text-gray-500 mb-4">데이터가 없습니다. 측정을 시작해 주세요!</div>
+
+            <div class="space-y-8">
+                <!-- PHQ-9 Chart (Title changed to 일지) -->
+                <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">PHQ-9 (우울) 일지</h3>
+                    <div class="relative h-48 md:h-64">
+                        <canvas id="phqChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- GAD-7 Chart (Title changed to 일지) -->
+                <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">GAD-7 (불안) 일지</h3>
+                    <div class="relative h-48 md:h-64">
+                        <canvas id="gadChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- PSS Chart (Title changed to 일지) -->
+                <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">PSS (스트레스) 일지</h3>
+                    <div class="relative h-48 md:h-64">
+                        <canvas id="pssChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Last Measurement Summary (Text color unified to gray/black) -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">최근 측정 요약</h2>
+            <div id="latest-summary" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- PHQ-9 Summary: Unified Card Color, Text Gray/Black -->
+                <div class="p-4 phq-card-color rounded-xl shadow-md">
+                    <p class="font-bold text-lg text-gray-800">PHQ-9</p>
+                    <p class="text-3xl font-extrabold text-gray-900" id="latest-phq">--</p>
+                    <p class="text-sm text-gray-600">우울도 점수 (최대 27점)</p>
+                </div>
+                <!-- GAD-7 Summary: Unified Card Color, Text Gray/Black -->
+                <div class="p-4 gad-card-color rounded-xl shadow-md">
+                    <p class="font-bold text-lg text-gray-800">GAD-7</p>
+                    <p class="text-3xl font-extrabold text-gray-900" id="latest-gad">--</p>
+                    <p class="text-sm text-gray-600">불안도 점수 (최대 21점)</p>
+                </div>
+                <!-- PSS Summary: Unified Card Color, Text Gray/Black -->
+                <div class="p-4 pss-card-color rounded-xl shadow-md">
+                    <p class="font-bold text-lg text-gray-800">PSS</p>
+                    <p class="text-3xl font-extrabold text-gray-900" id="latest-pss">--</p>
+                    <p class="text-sm text-gray-600">지각 스트레스 점수 (최대 40점)</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Assessment Modal (Unified Sky Blue - Lighter 400) -->
+    <div id="assessment-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300">
+            <!-- Modal Header Unified Sky Blue -->
+            <div id="modal-header" class="p-6 text-white text-xl font-bold rounded-t-xl bg-sky-400">
+                <span id="scale-title"></span> 측정
+            </div>
+            
+            <div class="p-6 custom-scrollbar max-h-[70vh] overflow-y-auto">
+                <form id="assessment-form">
+                    <!-- Questions will be dynamically inserted here -->
+                </form>
+            </div>
+
+            <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button id="cancel-assessment" type="button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium transition">취소</button>
+                <!-- Submit button unified Sky Blue -->
+                <button id="submit-assessment" type="submit" form="assessment-form" class="px-4 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500 font-semibold transition">결과 저장</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // NOTE: signInAnonymously와 signInWithCustomToken을 제거하고 onAuthStateChanged만 유지했습니다.
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, addDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- 🚨 사용자님의 실제 Firebase 설정이 필요한 부분 🚨 ---
+        // 1. Firebase 콘솔에서 실제 프로젝트 설정을 복사하여 YOUR_CONFIG_HERE에 붙여넣으세요.
+        // 2. appId는 Firestore의 기본 경로를 설정합니다.
+        
+        const appId = 'my-mind-mirror-mmm-prod'; // 앱 이름 변경에 맞춰 ID 변경
+        const firebaseConfig = {
+            // 💡 [여기에 실제 Firebase 설정 객체를 붙여넣으세요 (apiKey, authDomain, projectId 등)] 
+            // 예시 (반드시 사용자님의 정보로 대체해야 합니다):
+            // apiKey: "YOUR_API_KEY",
+            // authDomain: "your-project.firebaseapp.com",
+            // projectId: "your-project-id",
+            // storageBucket: "your-project.appspot.com",
+            // messagingSenderId: "...",
+            // appId: "..."
+        };
+
+        // --- 전역 변수 설정 ---
+        let app, db, auth, userId = null;
+        let phqChartInstance = null;
+        let gadChartInstance = null;
+        let pssChartInstance = null;
+        let scaleData = null;
+        
+        // --- 색상 및 UI 설정 ---
+        const CHART_COLOR_UNIFIED = 'rgb(56, 189, 248)'; // Sky 400
+        const CHART_BG_COLOR_UNIFIED = 'rgba(56, 189, 248, 0.2)';
+        const BUTTON_COLOR_CLASS = "bg-sky-400";
+        const BUTTON_HOVER_CLASS = "hover:bg-sky-500";
+        
+        // --- 차트 설정 상수 ---
+        const CHART_CONFIGS = {
+            PHQ9: { id: 'phqChart', label: 'PHQ-9 (우울)', maxScore: 27, color: CHART_COLOR_UNIFIED, bgColor: CHART_BG_COLOR_UNIFIED, prop: 'phq9', instance: 'phqChartInstance' },
+            GAD7: { id: 'gadChart', label: 'GAD-7 (불안)', maxScore: 21, color: CHART_COLOR_UNIFIED, bgColor: CHART_BG_COLOR_UNIFIED, prop: 'gad7', instance: 'gadChartInstance' },
+            PSS: { id: 'pssChart', label: 'PSS (스트레스)', maxScore: 40, color: CHART_COLOR_UNIFIED, bgColor: CHART_BG_COLOR_UNIFIED, prop: 'pss', instance: 'pssChartInstance' }
+        };
+
+        // --- 설문 문항 및 옵션 (생략) ---
+        // (가독성을 위해 상세 문항 데이터는 생략하고 주요 로직만 남깁니다. 실제 파일에는 포함되어 있습니다.)
+        const responseOptionsPHQGAD = [ { value: 0, text: "전혀 없음" }, { value: 1, text: "몇 일" }, { value: 2, text: "일주일에 반 이상" }, { value: 3, text: "거의 매일" }];
+        const responseOptionsPSS = [ { value: 0, text: "전혀 없다" }, { value: 1, text: "거의 없다" }, { value: 2, text: "때때로 있다" }, { value: 3, text: "자주 있다" }, { value: 4, text: "매우 자주 있다" }];
+        const reverseScoreMap = { 0: 4, 1: 3, 2: 2, 3: 1, 4: 0 };
+        // PHQ-9, GAD-7, PSS 문항은 이전에 생성된 완전한 데이터 구조를 따릅니다.
+        const assessments = {
+            PHQ9: {
+                title: "PHQ-9 (우울증 선별 도구)",
+                color: BUTTON_COLOR_CLASS, options: responseOptionsPHQGAD,
+                questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 일에 흥미나 즐거움이 거의 없었다.", "2. 기분이 가라앉거나, 우울하거나, 희망이 없다고 느꼈다.", "3. 잠들거나 계속 잠을 자는 데 어려움이 있거나, 너무 많이 잤다.", "4. 피곤하거나 기력이 거의 없었다.", "5. 식욕이 없거나 과식했다.", "6. 자신을 실패자라고 느끼거나, 자신이나 가족을 실망시켰다고 느꼈다.", "7. 신문 읽기나 TV 시청처럼 평소보다 느리게 움직이거나 말을 했고, 다른 사람들이 알아챌 정도였다. 또는 이와 반대로 너무 안절부절못해서 평소보다 많이 움직였다.", "8. 집중하기가 어렵다(예: 신문 읽기, TV 시청 시).", "9. 지난 2주 동안 이 문제들로 인해 직장/학업, 가정 생활, 또는 다른 사람들과의 관계에서 어려움이 있었다면 얼마나 심각했습니까?"].slice(0, 10) 
+            },
+            GAD7: {
+                title: "GAD-7 (범불안장애 선별 도구)",
+                color: BUTTON_COLOR_CLASS, options: responseOptionsPHQGAD,
+                questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 안절부절못하거나 평온하게 있을 수 없었다.", "2. 쉽게 짜증을 내거나 신경이 곤두서 있었다.", "3. 무엇인가 걱정하는 것을 멈출 수 없거나 조절할 수 없었다.", "4. 지나치게 걱정했다.", "5. 여러 가지 일에 대해 너무 걱정했다.", "6. 불안 때문에 휴식을 취하기 어려웠다.", "7. 너무 걱정되어서 잠들기가 어려웠다."]
+            },
+            PSS: {
+                title: "PSS-10 (지각된 스트레스 척도)",
+                color: BUTTON_COLOR_CLASS, options: responseOptionsPSS,
+                questions: ["지난 한 달 동안, 다음 각 질문의 상황이 얼마나 자주 있었는지 응답해 주십시오. (10문항)", "1. 예기치 않은 일들 때문에 당황했던 적이 얼마나 자주 있었습니까?", "2. 생활의 중요한 일들을 통제할 수 없다고 느꼈던 적이 얼마나 자주 있었습니까?", "3. 신경이 예민해지고 스트레스를 받았다고 느꼈던 적이 얼마나 자주 있었습니까?", "4. 생활 속에서 일어나는 일들을 처리하는 데 효과적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "5. 당신에게 중요한 일들을 완벽하게 처리할 수 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "6. 당신이 통제할 수 없었던 일들 때문에 화가 났던 적이 얼마나 자주 있었습니까?", "7. 사소한 일들에 대해 성공적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "8. 쌓여 있는 일들을 잘 처리하고 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "9. 당신이 감당할 수 없을 정도로 많은 일들이 쌓여 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "10. 당신의 개인적인 일들이 계획대로 진행되고 있다고 느꼈던 적이 얼마나 자주 있었습니까?"],
+                reverseIndices: [4, 5, 7, 8, 10]
+            }
+        };
+
+        // --- Firebase 초기화 및 인증 관리 ---
+
+        function toggleAppFeatures(enable) {
+            const buttons = document.querySelectorAll('#assessment-buttons button');
+            buttons.forEach(btn => btn.disabled = !enable);
+            const blocker = document.getElementById('auth-blocker');
+            if (enable) {
+                blocker.classList.add('hidden');
+            } else {
+                blocker.classList.remove('hidden');
+            }
+        }
+        
+        async function initFirebase() {
+            // Firebase 설정 객체가 비어 있는지 확인
+            if (!firebaseConfig || !firebaseConfig.apiKey) {
+                document.getElementById('auth-status').textContent = '설정 오류';
+                showError("Firebase 설정이 정의되지 않았습니다. index.html 파일을 수정해 주세요.");
+                toggleAppFeatures(false);
+                return;
+            }
+
+            try {
+                setLogLevel('error');
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                document.getElementById('auth-status').textContent = '로그인 대기 중...';
+                
+                // onAuthStateChanged: 사용자 로그인/로그아웃 상태 변화를 감지
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        // 로그인 성공: userId 설정 및 UI 업데이트
+                        userId = user.uid;
+                        document.getElementById('auth-status').textContent = `인증 완료 (UID: ${userId.substring(0, 4)}...)`;
+                        document.getElementById('display-user-id').textContent = userId;
+                        toggleAppFeatures(true);
+                        setupRealtimeListener();
+                    } else {
+                        // 로그아웃 또는 인증 실패: UI 업데이트 및 기능 비활성화
+                        userId = null;
+                        document.getElementById('auth-status').textContent = '로그인 필요';
+                        document.getElementById('display-user-id').textContent = '인증 필요';
+                        toggleAppFeatures(false);
+                        // 차트 및 요약 데이터 초기화 (선택 사항)
+                        updateCharts([]);
+                        updateSummary([]);
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase 초기화 오류:", error);
+                showError("Firebase 초기화에 실패했습니다. 설정을 확인해 주세요.");
+                toggleAppFeatures(false);
+            }
+        }
+
+        // --- Firestore Data Operations (이하 로직은 변경 없음) ---
+
+        function getCollectionRef() {
+            if (!db || !userId) return null;
+            // Private data path: /artifacts/{appId}/users/{userId}/stress_trackers
+            const path = `artifacts/${appId}/users/${userId}/stress_trackers`;
+            return collection(db, path);
+        }
+
+        function setupRealtimeListener() {
+            const colRef = getCollectionRef();
+            if (!colRef) return;
+            
+            // 데이터 변경 리스너 설정
+            onSnapshot(colRef, (snapshot) => {
+                const results = [];
+                snapshot.forEach((doc) => { results.push({ id: doc.id, ...doc.data() }); });
+                results.sort((a, b) => (a.timestamp ? a.timestamp.toDate() : 0) - (b.timestamp ? b.timestamp.toDate() : 0));
+                
+                scaleData = results;
+                updateCharts(scaleData);
+                updateSummary(scaleData);
+            }, (error) => {
+                console.error("데이터 실시간 리스너 오류:", error);
+                showError("데이터를 불러오는 중 오류가 발생했습니다.");
+            });
+        }
+        
+        async function saveAssessmentResult(result) {
+            const colRef = getCollectionRef();
+            if (!colRef) {
+                showError("데이터베이스 연결 오류: 로그인 상태를 확인해 주세요.");
+                return;
+            }
+            
+            showLoading(true);
+            try {
+                await addDoc(colRef, { ...result, timestamp: serverTimestamp() });
+            } catch (error) {
+                console.error("측정 결과 저장 오류:", error);
+                showError("측정 결과를 저장하는 데 실패했습니다.");
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // --- Chart & UI Rendering (이하 차트 로직은 유지) ---
+        
+        function createOrUpdateChart(chartId, dataLabels, scoreData, config) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            let instance;
+            if (config.instance === 'phqChartInstance') instance = phqChartInstance;
+            else if (config.instance === 'gadChartInstance') instance = gadChartInstance;
+            else if (config.instance === 'pssChartInstance') instance = pssChartInstance;
+
+            if (instance) {
+                instance.data.labels = dataLabels;
+                instance.data.datasets[0].data = scoreData;
+                instance.update();
+                return instance;
+            }
+
+            const newInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dataLabels,
+                    datasets: [{
+                        label: config.label, data: scoreData, borderColor: config.color, backgroundColor: config.bgColor,
+                        tension: 0.4, fill: true, pointBackgroundColor: config.color, borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                    scales: {
+                        y: { beginAtZero: true, max: config.maxScore, title: { display: true, text: '점수' } , ticks: { precision: 0 } },
+                        x: { title: { display: true, text: '측정일' }, ticks: { autoSkip: true, maxTicksLimit: 7 } }
+                    }
+                }
+            });
+            
+            if (config.instance === 'phqChartInstance') phqChartInstance = newInstance;
+            else if (config.instance === 'gadChartInstance') gadChartInstance = newInstance;
+            else if (config.instance === 'pssChartInstance') pssChartInstance = newInstance;
+
+            return newInstance;
+        }
+
+        function updateCharts(data) {
+            if (data.length === 0) {
+                document.getElementById('chart-caption').textContent = "데이터가 없습니다. 측정을 시작해 주세요!";
+                if(phqChartInstance) { phqChartInstance.destroy(); phqChartInstance = null; }
+                if(gadChartInstance) { gadChartInstance.destroy(); gadChartInstance = null; }
+                if(pssChartInstance) { pssChartInstance.destroy(); pssChartInstance = null; }
+                return;
+            }
+
+            document.getElementById('chart-caption').textContent = `총 ${data.length}건의 측정 기록이 있습니다.`;
+            const labels = data.map(item => {
+                if (item.timestamp) {
+                    const date = item.timestamp.toDate();
+                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                }
+                return 'N/A';
+            });
+
+            const phqScores = data.map(item => item.phq9 || null);
+            const gadScores = data.map(item => item.gad7 || null);
+            const pssScores = data.map(item => item.pss || null);
+
+            createOrUpdateChart(CHART_CONFIGS.PHQ9.id, labels, phqScores, CHART_CONFIGS.PHQ9);
+            createOrUpdateChart(CHART_CONFIGS.GAD7.id, labels, gadScores, CHART_CONFIGS.GAD7);
+            createOrUpdateChart(CHART_CONFIGS.PSS.id, labels, pssScores, CHART_CONFIGS.PSS);
+        }
+
+        function updateSummary(data) {
+            const latest = data.length > 0 ? data[data.length - 1] : null;
+
+            document.getElementById('latest-phq').textContent = latest && latest.phq9 !== undefined ? latest.phq9 : '--';
+            document.getElementById('latest-gad').textContent = latest && latest.gad7 !== undefined ? latest.gad7 : '--';
+            document.getElementById('latest-pss').textContent = latest && latest.pss !== undefined ? latest.pss : '--';
+        }
+
+        // --- Modal & Form Handlers (이하 로직은 유지) ---
+
+        let currentScale = '';
+
+        function openAssessmentModal(scale) {
+            if (!userId) {
+                showError("측정을 시작하기 전에 먼저 로그인/인증이 필요합니다.");
+                return;
+            }
+
+            currentScale = scale;
+            const assessment = assessments[scale];
+            
+            document.getElementById('scale-title').textContent = assessment.title.split(' ')[0];
+            
+            const header = document.getElementById('modal-header');
+            header.classList.forEach(cls => { if (cls.startsWith('bg-')) header.classList.remove(cls); });
+            header.classList.add(BUTTON_COLOR_CLASS);
+
+            const submitButton = document.getElementById('submit-assessment');
+            submitButton.classList.forEach(cls => { if (cls.startsWith('bg-') || cls.startsWith('hover:bg-')) submitButton.classList.remove(cls); });
+            submitButton.classList.add(BUTTON_COLOR_CLASS, BUTTON_HOVER_CLASS);
+
+            const form = document.getElementById('assessment-form');
+            form.innerHTML = '';
+            
+            let introText = `<p class="text-gray-600 mb-4">${assessment.questions[0]}</p>`;
+            form.insertAdjacentHTML('beforeend', introText);
+
+            const questionsToRender = scale === 'PHQ9' ? assessment.questions.slice(1, 10) : assessment.questions.slice(1);
+            
+            questionsToRender.forEach((questionText, index) => {
+                const qNum = index + 1;
+                let questionHtml = `
+                    <div class="mb-5 p-4 border border-gray-200 rounded-lg shadow-sm">
+                        <p class="font-semibold text-gray-800 mb-3">${questionText}</p>
+                        <div class="space-y-2">
+                `;
+                
+                assessment.options.forEach(option => {
+                    const uniqueId = `${scale}-q${qNum}-v${option.value}`;
+                    questionHtml += `
+                        <label for="${uniqueId}" class="flex items-center p-2 bg-white rounded-md cursor-pointer hover:bg-gray-50 transition">
+                            <input type="radio" id="${uniqueId}" name="q${qNum}" value="${option.value}" required class="w-4 h-4 text-sky-600 border-gray-300 focus:ring-sky-600">
+                            <span class="ml-3 text-gray-700 text-sm">${option.text}</span>
+                        </label>
+                    `;
+                });
+
+                questionHtml += `
+                        </div>
+                    </div>
+                `;
+                form.insertAdjacentHTML('beforeend', questionHtml);
+            });
+
+            document.getElementById('assessment-modal').classList.remove('hidden');
+        }
+
+        function closeAssessmentModal() {
+            document.getElementById('assessment-modal').classList.add('hidden');
+            document.getElementById('assessment-form').reset();
+        }
+
+        function calculateScore(scale, formData) {
+            let totalScore = 0;
+            const assessment = assessments[scale];
+            const numQuestionsForScoring = scale === 'PHQ9' ? 8 : assessment.questions.length - 1;
+
+            for (let i = 1; i <= numQuestionsForScoring; i++) {
+                const key = `q${i}`;
+                const value = parseInt(formData.get(key));
+                
+                if (isNaN(value)) {
+                    showError(`'${i}번 질문'에 응답해 주세요.`);
+                    return null; 
+                }
+
+                if (scale === 'PSS' && assessment.reverseIndices.includes(i)) {
+                    const finalScore = reverseScoreMap[value];
+                    totalScore += finalScore;
+                } else {
+                    totalScore += value;
+                }
+            }
+            if (scale === 'PHQ9' && isNaN(parseInt(formData.get('q9')))) {
+                showError(`'9번 질문'에 응답해 주세요.`);
+                return null;
+            }
+            
+            return totalScore;
+        }
+
+        document.getElementById('assessment-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const score = calculateScore(currentScale, formData);
+            if (score === null) return;
+            
+            const result = {};
+            if (currentScale === 'PHQ9') result.phq9 = score;
+            else if (currentScale === 'GAD7') result.gad7 = score;
+            else if (currentScale === 'PSS') result.pss = score;
+
+            await saveAssessmentResult(result);
+            closeAssessmentModal();
+        });
+
+        document.getElementById('assessment-buttons').addEventListener('click', (e) => {
+            const button = e.target.closest('button[data-scale]');
+            if (button) {
+                openAssessmentModal(button.dataset.scale);
+            }
+        });
+
+        document.getElementById('cancel-assessment').addEventListener('click', closeAssessmentModal);
+
+
+        // --- Utility Functions ---
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            document.getElementById('error-text').textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 8000);
+        }
+
+        function showLoading(isLoading) {
+            const loadingDiv = document.getElementById('loading-indicator');
+            if (isLoading) {
+                loadingDiv.classList.remove('hidden');
+            } else {
+                loadingDiv.classList.add('hidden');
+            }
+        }
+        
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initFirebase();
+        });
+
+    </script>
+</body>
+</html>
