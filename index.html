@@ -6,11 +6,11 @@
     <!-- 제목 변경: My Mind Mirror (MMM) -->
     <title>My Mind Mirror (MMM)</title>
     <!-- Pretendard Font -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css" />
+    <link rel="stylesheet" as="style" crossorigin href="[https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css](https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css)" />
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <!-- Chart.js CDN for graphing -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js](https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js)"></script>
     <style>
         /* Custom scrollbar for better aesthetics */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -69,9 +69,12 @@
 
         <!-- User Info & Loading -->
         <div class="mb-6 flex justify-between items-center text-sm">
-            <div id="user-info" class="text-gray-600">
+            <div id="user-info" class="text-gray-600 flex items-center space-x-4">
+                <!-- 전체 사용자 ID 표시하도록 변경 -->
                 <p>사용자 ID: <span id="display-user-id" class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">인증 필요</span></p>
                 <p class="mt-1">인증 상태: <span id="auth-status" class="font-semibold text-red-500">인증 로드 중...</span></p>
+                <!-- Sign-out Button -->
+                <button id="signout-button" class="hidden text-xs px-2 py-1 bg-red-400 text-white rounded-lg hover:bg-red-500 transition ml-4">로그아웃</button>
             </div>
             <div id="loading-indicator" class="hidden flex items-center space-x-2 text-blue-500">
                 <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -79,18 +82,28 @@
             </div>
         </div>
 
-        <!-- Authentication Prompt/Blocker -->
-        <div id="auth-blocker" class="hidden mb-6 p-6 bg-red-50 border border-red-300 rounded-xl">
-            <h3 class="font-bold text-lg text-red-700 mb-2">🚨 인증 필수</h3>
-            <p class="text-red-600">개인 정보의 안전한 저장을 위해 로그인/회원가입이 필요합니다. Firebase Authentication을 활성화하고 로그인 UI를 추가해주세요. 현재 기능이 비활성화되었습니다.</p>
-            <!-- Authentication Prompt/Blocker -->
-        <div id="auth-blocker" class="hidden mb-6 p-6 bg-red-50 border border-red-300 rounded-xl">
-            <h3 class="font-bold text-lg text-red-700 mb-2">🚨 인증 필수</h3>
-            <p class="text-red-600">개인 데이터의 안전한 저장을 위해 로그인/회원가입이 필요합니다. Firebase Authentication을 활성화하고 로그인 UI를 추가해주세요. 현재 기능이 비활성화되었습니다.</p>
+        <!-- Authentication Prompt/Blocker - Now includes Login Form -->
+        <div id="auth-blocker" class="mb-6 p-6 bg-red-50 border border-red-300 rounded-xl">
+            <h3 class="font-bold text-lg text-red-700 mb-2">🚨 로그인 / 회원가입 필요</h3>
+            <p class="text-red-600 mb-4">개인 데이터의 안전한 저장을 위해 이메일과 비밀번호로 로그인하거나 회원가입을 해주세요.</p>
             
-            <!-- 여기에 로그인/회원가입 폼 HTML 코드를 추가합니다. -->
-            <!-- In a real app, a login/signup form would go here -->
-        </div>
+            <!-- Login/Signup Form UI -->
+            <form id="auth-form">
+                <input type="email" id="auth-email" placeholder="이메일 주소" required 
+                       class="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 text-gray-800">
+                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required 
+                       class="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 text-gray-800">
+                
+                <div class="flex justify-between items-center">
+                    <button type="submit" id="auth-submit-button" data-mode="signin"
+                            class="px-5 py-2 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition">
+                        로그인
+                    </button>
+                    <a href="#" id="auth-mode-toggle" class="text-sm text-sky-600 hover:text-sky-700 transition">
+                        회원가입 하기
+                    </a>
+                </div>
+            </form>
         </div>
 
         <!-- Assessment Buttons (Unified Sky Blue - Lighter 400) -->
@@ -198,54 +211,27 @@
         </div>
     </div>
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs & Logic -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // NOTE: signInAnonymously와 signInWithCustomToken을 제거하고 onAuthStateChanged만 유지했습니다.
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, addDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js)";
+        // Authentication 기능을 위해 필요한 함수들을 가져옵니다.
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js)";
+        import { getFirestore, addDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "[https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js](https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js)";
 
         // --- 🚨 사용자님의 실제 Firebase 설정이 필요한 부분 🚨 ---
-        // 1. Firebase 콘솔에서 실제 프로젝트 설정을 복사하여 YOUR_CONFIG_HERE에 붙여넣으세요.
-        // 2. appId는 Firestore의 기본 경로를 설정합니다.
+        // 이 설정 객체는 사용자님께서 이전에 삽입하신 내용으로, 작동한다고 가정하고 사용합니다.
         
-        const appId = 'my-mind-mirror-mmm-prod'; // 앱 이름 변경에 맞춰 ID 변경
+        const appId = 'my-mind-mirror-mmm-prod'; // 앱 ID
         const firebaseConfig = {
-    apiKey: "AIzaSyDJ5lpzMYtQP_TrfqXQDF9QTmAVYNU84kE",
-    authDomain: "mmm-project-13fb3.firebaseapp.com",
-    projectId: "mmm-project-13fb3",
-    storageBucket: "mmm-project-13fb3.firebasestorage.app",
-    messagingSenderId: "845948284004",
-    appId: "1:845948284004:web:aec6d670eb1e656a5a0371",
-    measurementId: "G-3TJ21YRM59"
-  };
-// 필요한 서비스에 따라 추가하거나 제거할 수 있습니다.
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-// ... 다른 Firebase 서비스도 이와 같이 가져올 수 있습니다.
-
-// Firebase 콘솔에서 얻은 프로젝트 구성 객체입니다.
-// 이 정보는 실제 앱에서 직접 노출되지 않도록 주의해야 합니다.
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID", // 예: "mmm-project-13fb3"
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "G-YOUR_MEASUREMENT_ID" // Google Analytics가 활성화된 경우
-};
-
-// Firebase 앱을 초기화합니다.
-const app = initializeApp(firebaseConfig);
-
-// 초기화된 앱에서 특정 서비스를 가져옵니다.
-const db = getFirestore(app); // Cloud Firestore
-const auth = getAuth(app);   // Firebase Authentication
-
-// 이제 'db' 및 'auth' 객체를 사용하여 해당 Firebase 서비스를 호출할 수 있습니다.
+            apiKey: "AIzaSyDJ5lpzMYtQP_TrfqXQDF9QTmAVYNU84kE",
+            authDomain: "mmm-project-13fb3.firebaseapp.com",
+            projectId: "mmm-project-13fb3",
+            storageBucket: "mmm-project-13fb3.firebasestorage.app",
+            messagingSenderId: "845948284004",
+            appId: "1:845948284004:web:aec6d670eb1e656a5a0371",
+            measurementId: "G-3TJ21YRM59"
         };
+        // NOTE: 중복된 Firebase Config 선언은 제거되었습니다.
 
         // --- 전역 변수 설정 ---
         let app, db, auth, userId = null;
@@ -267,12 +253,10 @@ const auth = getAuth(app);   // Firebase Authentication
             PSS: { id: 'pssChart', label: 'PSS (스트레스)', maxScore: 40, color: CHART_COLOR_UNIFIED, bgColor: CHART_BG_COLOR_UNIFIED, prop: 'pss', instance: 'pssChartInstance' }
         };
 
-        // --- 설문 문항 및 옵션 (생략) ---
-        // (가독성을 위해 상세 문항 데이터는 생략하고 주요 로직만 남깁니다. 실제 파일에는 포함되어 있습니다.)
+        // --- 설문 문항 및 옵션 (가독성을 위해 생략) ---
         const responseOptionsPHQGAD = [ { value: 0, text: "전혀 없음" }, { value: 1, text: "몇 일" }, { value: 2, text: "일주일에 반 이상" }, { value: 3, text: "거의 매일" }];
         const responseOptionsPSS = [ { value: 0, text: "전혀 없다" }, { value: 1, text: "거의 없다" }, { value: 2, text: "때때로 있다" }, { value: 3, text: "자주 있다" }, { value: 4, text: "매우 자주 있다" }];
         const reverseScoreMap = { 0: 4, 1: 3, 2: 2, 3: 1, 4: 0 };
-        // PHQ-9, GAD-7, PSS 문항은 이전에 생성된 완전한 데이터 구조를 따릅니다.
         const assessments = {
             PHQ9: {
                 title: "PHQ-9 (우울증 선별 도구)",
@@ -297,12 +281,57 @@ const auth = getAuth(app);   // Firebase Authentication
         function toggleAppFeatures(enable) {
             const buttons = document.querySelectorAll('#assessment-buttons button');
             buttons.forEach(btn => btn.disabled = !enable);
+            
             const blocker = document.getElementById('auth-blocker');
+            const signoutButton = document.getElementById('signout-button');
+            
             if (enable) {
                 blocker.classList.add('hidden');
+                signoutButton.classList.remove('hidden');
             } else {
                 blocker.classList.remove('hidden');
+                signoutButton.classList.add('hidden');
             }
+        }
+        
+        // --- 인증 로직 함수 ---
+
+        async function signInUser(email, password) {
+            showLoading(true);
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showError("로그인 성공!");
+            } catch (error) {
+                console.error("로그인 실패:", error.code, error.message);
+                showError(`로그인 실패: ${error.message.split('(')[0] || "이메일 또는 비밀번호를 확인해주세요."}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function signUpUser(email, password) {
+            showLoading(true);
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showError("회원가입 및 자동 로그인이 완료되었습니다!");
+            } catch (error) {
+                console.error("회원가입 실패:", error.code, error.message);
+                showError(`회원가입 실패: ${error.message.split('(')[0] || "이미 존재하는 계정이거나 형식이 잘못되었습니다."}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function handleSignOut() {
+            showLoading(true);
+            signOut(auth).then(() => {
+                showError("로그아웃되었습니다.");
+            }).catch((error) => {
+                showError("로그아웃 중 오류가 발생했습니다.");
+                console.error("로그아웃 오류:", error);
+            }).finally(() => {
+                showLoading(false);
+            });
         }
         
         async function initFirebase() {
@@ -326,7 +355,7 @@ const auth = getAuth(app);   // Firebase Authentication
                     if (user) {
                         // 로그인 성공: userId 설정 및 UI 업데이트
                         userId = user.uid;
-                        document.getElementById('auth-status').textContent = `인증 완료 (UID: ${userId.substring(0, 4)}...)`;
+                        document.getElementById('auth-status').textContent = `인증 완료`;
                         document.getElementById('display-user-id').textContent = userId;
                         toggleAppFeatures(true);
                         setupRealtimeListener();
@@ -336,7 +365,7 @@ const auth = getAuth(app);   // Firebase Authentication
                         document.getElementById('auth-status').textContent = '로그인 필요';
                         document.getElementById('display-user-id').textContent = '인증 필요';
                         toggleAppFeatures(false);
-                        // 차트 및 요약 데이터 초기화 (선택 사항)
+                        // 차트 및 요약 데이터 초기화
                         updateCharts([]);
                         updateSummary([]);
                     }
@@ -349,7 +378,48 @@ const auth = getAuth(app);   // Firebase Authentication
             }
         }
 
-        // --- Firestore Data Operations (이하 로직은 변경 없음) ---
+        // --- 이벤트 리스너 연결 ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const authForm = document.getElementById('auth-form');
+            const authSubmitButton = document.getElementById('auth-submit-button');
+            const authModeToggle = document.getElementById('auth-mode-toggle');
+            
+            if(authForm) {
+                authForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const email = document.getElementById('auth-email').value;
+                    const password = document.getElementById('auth-password').value;
+                    const mode = authSubmitButton.dataset.mode;
+
+                    if (mode === 'signin') {
+                        signInUser(email, password);
+                    } else {
+                        signUpUser(email, password);
+                    }
+                });
+
+                authModeToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (authSubmitButton.dataset.mode === 'signin') {
+                        authSubmitButton.dataset.mode = 'signup';
+                        authSubmitButton.textContent = '회원가입';
+                        authModeToggle.textContent = '로그인 화면으로 돌아가기';
+                    } else {
+                        authSubmitButton.dataset.mode = 'signin';
+                        authSubmitButton.textContent = '로그인';
+                        authModeToggle.textContent = '회원가입 하기';
+                    }
+                });
+            }
+
+            document.getElementById('signout-button').addEventListener('click', handleSignOut);
+            
+            initFirebase();
+        });
+        
+        // --- Firestore Data Operations (이하 데이터 및 차트 로직은 유지) ---
 
         function getCollectionRef() {
             if (!db || !userId) return null;
@@ -395,7 +465,7 @@ const auth = getAuth(app);   // Firebase Authentication
             }
         }
 
-        // --- Chart & UI Rendering (이하 차트 로직은 유지) ---
+        // --- Chart & UI Rendering ---
         
         function createOrUpdateChart(chartId, dataLabels, scoreData, config) {
             const ctx = document.getElementById(chartId).getContext('2d');
@@ -472,7 +542,7 @@ const auth = getAuth(app);   // Firebase Authentication
             document.getElementById('latest-pss').textContent = latest && latest.pss !== undefined ? latest.pss : '--';
         }
 
-        // --- Modal & Form Handlers (이하 로직은 유지) ---
+        // --- Modal & Form Handlers ---
 
         let currentScale = '';
 
@@ -609,11 +679,6 @@ const auth = getAuth(app);   // Firebase Authentication
             }
         }
         
-        // --- Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            initFirebase();
-        });
-
     </script>
 </body>
 </html>
