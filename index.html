@@ -64,7 +64,7 @@
             <!-- Title Change - Centered -->
             <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center relative z-10">My Mind Mirror (MMM)</h1>
             <!-- Text Change - Centered -->
-            <p class="text-sm text-gray-500 text-center relative z-10">1주일에 한 번 이상 심리검사를 통해 마음의 변화를 확인하세요.</p>
+            <p class="text-sm text-gray-500 text-center relative z-10">1주일에 한 번 이상 심리검사를 통해 마음의 움직임을 확인하세요.</p>
         </div>
 
         <!-- User Info & Loading -->
@@ -84,8 +84,8 @@
 
         <!-- Authentication Prompt/Blocker - Now includes Login Form -->
         <div id="auth-blocker" class="mb-6 p-6 bg-red-50 border border-red-300 rounded-xl">
-            <h3 class="font-bold text-lg text-red-700 mb-2"> 회원가입과 로그인 필요</h3>
-            <p class="text-red-600 mb-4">개인 정보의 안전한 저장을 위해 이메일과 비밀번호로 회원가입 및 로그인 해 주세요.</p>
+            <h3 class="font-bold text-lg text-red-700 mb-2">🚨 로그인 / 회원가입 필요</h3>
+            <p class="text-red-600 mb-4">개인 데이터의 안전한 저장을 위해 이메일과 비밀번호로 로그인하거나 회원가입을 해주세요.</p>
             
             <!-- Login/Signup Form UI -->
             <form id="auth-form">
@@ -100,7 +100,7 @@
                         로그인
                     </button>
                     <a href="#" id="auth-mode-toggle" class="text-sm text-sky-600 hover:text-sky-700 transition">
-                        회원가입
+                        회원가입 하기
                     </a>
                 </div>
             </form>
@@ -138,7 +138,7 @@
             <div class="space-y-8">
                 <!-- PHQ-9 Chart (Title changed to 일지) -->
                 <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
-                    <h3 class="font-bold text-lg text-gray-800 mb-3">PHQ-9 (우울) 일지</h3>
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">우울의 움직임 (PHQ-9) </h3>
                     <div class="relative h-48 md:h-64">
                         <canvas id="phqChart"></canvas>
                     </div>
@@ -146,7 +146,7 @@
 
                 <!-- GAD-7 Chart (Title changed to 일지) -->
                 <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
-                    <h3 class="font-bold text-lg text-gray-800 mb-3">GAD-7 (불안) 일지</h3>
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">불안의 움직임 (GAD-7) </h3>
                     <div class="relative h-48 md:h-64">
                         <canvas id="gadChart"></canvas>
                     </div>
@@ -154,7 +154,7 @@
 
                 <!-- PSS Chart (Title changed to 일지) -->
                 <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
-                    <h3 class="font-bold text-lg text-gray-800 mb-3">PSS (스트레스) 일지</h3>
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">내가 느끼는 스트레스 (PSS) </h3>
                     <div class="relative h-48 md:h-64">
                         <canvas id="pssChart"></canvas>
                     </div>
@@ -308,21 +308,6 @@
                 showLoading(false);
             }
         }
-   
-        // --- 인증 로직 함수 ---
-
-        async function signInUser(email, password) {
-            showLoading(true);
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                showError("로그인 성공!");
-            } catch (error) {
-                console.error("로그인 실패:", error.code, error.message);
-                showError(`로그인 실패: ${error.message.split('(')[0] || "이메일 또는 비밀번호를 확인해주세요."}`);
-            } finally {
-                showLoading(false);
-            }
-        }
 
         async function signUpUser(email, password) {
             showLoading(true);
@@ -336,7 +321,6 @@
                 showLoading(false);
             }
         }
-
 
         function handleSignOut() {
             showLoading(true);
