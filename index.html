@@ -64,7 +64,7 @@
             <!-- Title Change - Centered -->
             <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center relative z-10">My Mind Mirror (MMM, 음-)</h1>
             <!-- Text Change - Centered -->
-            <p class="text-sm text-gray-500 text-center relative z-10">1주일에 한 번 이상 심리검사를 진행하고, 음- 그렇구나,하고 알아주세요. </p>
+            <p class="text-sm text-gray-500 text-center relative z-10">1주일에 한 번은 검사를 진행하고, 음- 그렇구나,하고 자기 마음을 알아주세요. </p>
         </div>
 
         <!-- User Info & Loading -->
@@ -84,8 +84,8 @@
 
         <!-- Authentication Prompt/Blocker - Now includes Login Form -->
         <div id="auth-blocker" class="mb-6 p-6 bg-red-50 border border-red-300 rounded-xl">
-            <h3 class="font-bold text-lg text-red-700 mb-2"> 회원가입/로그인 필요</h3>
-            <p class="text-red-600 mb-4">개인 정보의 안전한 저장을 위해 이메일과 비밀번호로 회원가입/로그인 해주세요.</p>
+            <h3 class="font-bold text-lg text-red-700 mb-2">🚨 로그인 / 회원가입 필요</h3>
+            <p class="text-red-600 mb-4">개인 데이터의 안전한 저장을 위해 이메일과 비밀번호로 로그인하거나 회원가입을 해주세요.</p>
             
             <!-- Login/Signup Form UI -->
             <form id="auth-form">
@@ -122,16 +122,16 @@
             </button>
         </div>
 
-        <!-- Error Message Area -->
-        <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6" role="alert">
-            <strong class="font-bold">오류 발생:</strong>
-            <span id="error-text" class="block sm:inline"></span>
+        <!-- Message Area HTML Structure Adjustment -->
+        <div id="message-box" class="hidden px-4 py-3 rounded-xl mb-6" role="alert">
+            <strong id="message-title" class="font-bold"></strong>
+            <span id="message-text" class="block sm:inline"></span>
         </div>
 
         <!-- Chart Section (Now individual charts) -->
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
             <!-- Subtitle Change - Added text-center -->
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center"> MMM (음-) 프로파일 </h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">마음의 파고</h2>
             
             <div id="chart-caption" class="text-center text-sm text-gray-500 mb-4">데이터가 없습니다. 측정을 시작해 주세요!</div>
 
@@ -321,7 +321,7 @@
             setTimeout(() => box.classList.add('hidden'), 8000);
         }
 
-        // 모든 기존 showError 호출을 displayMessage('error', ...)로 대체합니다.
+        // 모든 오류 처리는 displayMessage('error', ...)를 사용합니다.
         const showError = (message) => displayMessage('error', message);
         
         // --- 인증 로직 함수 ---
@@ -330,7 +330,7 @@
             showLoading(true);
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                displayMessage('success', "로그인 성공!"); // 수정: displayMessage 사용
+                displayMessage('success', "로그인 성공!"); 
             } catch (error) {
                 console.error("로그인 실패:", error.code, error.message);
                 showError(`로그인 실패: ${error.message.split('(')[0] || "이메일 또는 비밀번호를 확인해주세요."}`);
@@ -343,7 +343,7 @@
             showLoading(true);
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
-                displayMessage('success', "회원가입 및 자동 로그인이 완료되었습니다!"); // 수정: displayMessage 사용
+                displayMessage('success', "회원가입 및 자동 로그인이 완료되었습니다!"); 
             } catch (error) {
                 console.error("회원가입 실패:", error.code, error.message);
                 showError(`회원가입 실패: ${error.message.split('(')[0] || "이미 존재하는 계정이거나 형식이 잘못되었습니다."}`);
@@ -355,7 +355,7 @@
         function handleSignOut() {
             showLoading(true);
             signOut(auth).then(() => {
-                displayMessage('success', "로그아웃되었습니다."); // 수정: displayMessage 사용
+                displayMessage('success', "로그아웃되었습니다."); 
             }).catch((error) => {
                 showError("로그아웃 중 오류가 발생했습니다.");
                 console.error("로그아웃 오류:", error);
