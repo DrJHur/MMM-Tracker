@@ -131,7 +131,7 @@
         <!-- Chart Section (Now individual charts) -->
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
             <!-- Subtitle Change - Added text-center -->
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">마음의 파고</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center"> MMM(음음음) 프로파일 </h2>
             
             <div id="chart-caption" class="text-center text-sm text-gray-500 mb-4">데이터가 없습니다. 측정을 시작해 주세요!</div>
 
@@ -294,13 +294,43 @@
             }
         }
         
+        // --- Utility Functions: 메시지 표시 통합 ---
+        function displayMessage(type, message) {
+            const box = document.getElementById('message-box');
+            const title = document.getElementById('message-title');
+            const text = document.getElementById('message-text');
+
+            // 기본 스타일 초기화
+            box.className = 'px-4 py-3 rounded-xl mb-6';
+            title.className = 'font-bold';
+            text.className = 'block sm:inline';
+
+            if (type === 'error') {
+                box.classList.add('bg-red-100', 'border', 'border-red-400', 'text-red-700');
+                title.textContent = '오류 발생:';
+            } else if (type === 'success') {
+                box.classList.add('bg-blue-100', 'border', 'border-blue-400', 'text-blue-700');
+                title.textContent = '알림:';
+            } else {
+                 box.classList.add('bg-gray-100', 'border', 'border-gray-400', 'text-gray-700');
+                 title.textContent = '정보:';
+            }
+
+            text.textContent = message;
+            box.classList.remove('hidden');
+            setTimeout(() => box.classList.add('hidden'), 8000);
+        }
+
+        // 모든 기존 showError 호출을 displayMessage('error', ...)로 대체합니다.
+        const showError = (message) => displayMessage('error', message);
+        
         // --- 인증 로직 함수 ---
 
         async function signInUser(email, password) {
             showLoading(true);
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                showError("로그인 성공!");
+                displayMessage('success', "로그인 성공!"); // 수정: displayMessage 사용
             } catch (error) {
                 console.error("로그인 실패:", error.code, error.message);
                 showError(`로그인 실패: ${error.message.split('(')[0] || "이메일 또는 비밀번호를 확인해주세요."}`);
@@ -313,7 +343,7 @@
             showLoading(true);
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
-                showError("회원가입 및 자동 로그인이 완료되었습니다!");
+                displayMessage('success', "회원가입 및 자동 로그인이 완료되었습니다!"); // 수정: displayMessage 사용
             } catch (error) {
                 console.error("회원가입 실패:", error.code, error.message);
                 showError(`회원가입 실패: ${error.message.split('(')[0] || "이미 존재하는 계정이거나 형식이 잘못되었습니다."}`);
@@ -321,11 +351,11 @@
                 showLoading(false);
             }
         }
-
+        
         function handleSignOut() {
             showLoading(true);
             signOut(auth).then(() => {
-                showError("로그아웃되었습니다.");
+                displayMessage('success', "로그아웃되었습니다."); // 수정: displayMessage 사용
             }).catch((error) => {
                 showError("로그아웃 중 오류가 발생했습니다.");
                 console.error("로그아웃 오류:", error);
@@ -457,6 +487,7 @@
             showLoading(true);
             try {
                 await addDoc(colRef, { ...result, timestamp: serverTimestamp() });
+                displayMessage('success', "측정 결과가 성공적으로 저장되었습니다!"); // 수정: displayMessage 사용
             } catch (error) {
                 console.error("측정 결과 저장 오류:", error);
                 showError("측정 결과를 저장하는 데 실패했습니다.");
@@ -535,12 +566,38 @@
         }
 
         function updateSummary(data) {
-            const latest = data.length > 0 ? data[data.length - 1] : null;
+            // 각 척도별 최신 점수를 저장할 객체
+            const latestScores = {
+                phq9: '--',
+                gad7: '--',
+                pss: '--'
+            };
 
-            document.getElementById('latest-phq').textContent = latest && latest.phq9 !== undefined ? latest.phq9 : '--';
-            document.getElementById('latest-gad').textContent = latest && latest.gad7 !== undefined ? latest.gad7 : '--';
-            document.getElementById('latest-pss').textContent = latest && latest.pss !== undefined ? latest.pss : '--';
+            // 데이터를 역순으로 순회하며 각 척도의 첫 번째(가장 최신) 유효 점수를 찾습니다.
+            for (let i = data.length - 1; i >= 0; i--) {
+                const item = data[i];
+
+                if (latestScores.phq9 === '--' && item.phq9 !== undefined && item.phq9 !== null) {
+                    latestScores.phq9 = item.phq9;
+                }
+                if (latestScores.gad7 === '--' && item.gad7 !== undefined && item.gad7 !== null) {
+                    latestScores.gad7 = item.gad7;
+                }
+                if (latestScores.pss === '--' && item.pss !== undefined && item.pss !== null) {
+                    latestScores.pss = item.pss;
+                }
+
+                // 모든 점수를 찾았으면 반복을 중단합니다.
+                if (latestScores.phq9 !== '--' && latestScores.gad7 !== '--' && latestScores.pss !== '--') {
+                    break;
+                }
+            }
+
+            document.getElementById('latest-phq').textContent = latestScores.phq9;
+            document.getElementById('latest-gad').textContent = latestScores.gad7;
+            document.getElementById('latest-pss').textContent = latestScores.pss;
         }
+
 
         // --- Modal & Form Handlers ---
 
