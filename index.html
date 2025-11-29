@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Mind Mirror (MMM)</title>
     
-    <!-- 1. Vintage Font: Gowun Batang Import & Pretendard -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css" />
+    <!-- 폰트: 고운 바탕 (빈티지 느낌) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,238 +16,199 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     
     <style>
-        /* Custom scrollbar */
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background-color: #eee; }
+        /* 스크롤바 스타일 */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #375D49; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background-color: #F4E8C8; }
 
-        /* 1. 몽환적인 그라데이션 배경 (핑크, 노랑, 블루) */
+        /* 전체 배경: 이미지의 크림색, 텍스트: 다크 그린 */
         body {
-            background: linear-gradient(120deg, #EFABB4, #FFD16D, #51A0AF);
-            background-attachment: fixed;
-            background-size: 200% 200%;
-            animation: gradientBG 15s ease infinite; 
-            color: #1a1a1a; 
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            font-weight: 700; 
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            background-color: #F4E8C8; 
+            color: #375D49; 
+            font-family: 'Gowun Batang', serif;
         }
         
         canvas { width: 100% !important; height: 100% !important; }
 
-        /* 3. 비비드 & 고대비 컬러 클래스 + 검정 테두리 스타일 */
+        /* --- 커스텀 컬러 팔레트 (이미지 기반) --- */
         
-        /* 공통 버튼 스타일: 검정 테두리 + 그림자 */
-        .btn-common {
-            border: 3px solid #000000; /* 진한 검정 테두리 */
-            box-shadow: 4px 4px 0px #000000; /* 팝아트 그림자 */
-            transition: all 0.2s ease-in-out;
-        }
-        .btn-common:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px #000000;
-        }
-        .btn-common:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
+        /* 메인 텍스트/테두리 (다크 그린 #375D49) */
+        .text-main { color: #375D49; }
+        .border-main { border-color: #375D49; }
+        .bg-main { background-color: #375D49; }
+        
+        /* PHQ-9: 틸 블루 (#51A0AF) */
+        .bg-teal-custom { background-color: #51A0AF; }
+        .text-teal-custom { color: #51A0AF; }
+        .border-teal-custom { border-color: #51A0AF; }
+        .btn-teal { background-color: #51A0AF; color: #FFFFFF; }
+        .btn-teal:hover { background-color: #40808C; }
 
-        /* PHQ-9: Vivid Blue Gradient */
-        .bg-vivid-teal { background-color: #00B4D8; }
-        .text-vivid-teal { color: #0077B6; }
-        .btn-teal { 
-            background: linear-gradient(135deg, #48CAE4, #0077B6); /* 파랑 그라데이션 */
-            color: #FFFFFF; 
-        }
-        .btn-teal:hover { filter: brightness(1.1); }
+        /* GAD-7: 머스타드 옐로우 (#FFD16D) */
+        .bg-mustard-custom { background-color: #FFD16D; }
+        .text-mustard-custom { color: #E0B050; } 
+        .border-mustard-custom { border-color: #FFD16D; }
+        .btn-mustard { background-color: #FFD16D; color: #375D49; } 
+        .btn-mustard:hover { background-color: #E5BC62; }
 
-        /* GAD-7: Vivid Yellow Gradient */
-        .bg-vivid-yellow { background-color: #FFD60A; }
-        .text-vivid-yellow { color: #B45309; }
-        .btn-yellow { 
-            background: linear-gradient(135deg, #FFEA00, #FF9100); /* 노랑-주황 그라데이션 */
-            color: #000000; 
-        }
-        .btn-yellow:hover { filter: brightness(1.1); }
-
-        /* PSS: Vivid Pink Gradient */
-        .bg-vivid-pink { background-color: #FF006E; }
-        .text-vivid-pink { color: #C9184A; }
-        .btn-pink { 
-            background: linear-gradient(135deg, #FF5C8D, #D00000); /* 핑크-레드 그라데이션 */
-            color: #FFFFFF; 
-        }
-        .btn-pink:hover { filter: brightness(1.1); }
-
-        /* 카드 스타일 */
-        .card-style {
-            background-color: #FFFFFF;
-            border: 3px solid #000000;
-            box-shadow: 4px 4px 0px #000000; 
-            border-radius: 1rem;
+        /* PSS: 빈티지 레드 (#CF4638) - 이미지의 붉은 톤 */
+        .bg-red-custom { background-color: #CF4638; }
+        .text-red-custom { color: #CF4638; }
+        .border-red-custom { border-color: #CF4638; }
+        .btn-red { background-color: #CF4638; color: #FFFFFF; }
+        .btn-red:hover { background-color: #A8382D; }
+        
+        /* 테두리 효과 */
+        .dreamy-border {
+            border: 4px solid #375D49;
+            border-radius: 1.5rem;
+            box-shadow: 8px 8px 0px rgba(55, 93, 73, 0.2);
         }
         
-        /* 입력폼 스타일 */
-        .input-vivid {
-            border: 3px solid #000000;
-            font-weight: 700;
-            color: #000;
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-        }
-        .input-vivid:focus {
-            border-color: #FF006E;
-            outline: none;
-            box-shadow: 4px 4px 0px #FF006E;
-        }
+        /* 차트 카드 배경색 */
+        .phq-card-color { background-color: rgba(81, 160, 175, 0.1); }
+        .gad-card-color { background-color: rgba(255, 209, 109, 0.2); }
+        .pss-card-color { background-color: rgba(207, 70, 56, 0.1); }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
 
     <!-- 메인 컨테이너 -->
-    <div id="app" class="w-full max-w-4xl bg-white shadow-2xl rounded-3xl p-6 md:p-10 border-4 border-black relative z-10 my-8">
+    <div id="app" class="w-full max-w-4xl dreamy-border p-6 md:p-10 relative z-10 my-8 bg-[#FDFBF7]">
 
         <!-- 제목 -->
-        <div class="relative mb-10 pt-2 text-center"> 
-            <h1 class="text-4xl md:text-5xl font-extrabold text-black mb-3 tracking-tight">My Mind Mirror, MMM (음-)</h1>
-            <p class="text-lg md:text-xl text-gray-700 font-bold">1주일에 한 번은 검사를 진행하고,<br class="md:hidden"> 음- 그렇구나,하고 자기 마음을 알아주세요.</p>
+        <div class="relative mb-8 pt-2 text-center"> 
+            <h1 class="text-4xl font-bold text-[#375D49] mb-3" style="letter-spacing: -1px;">My Mind Mirror, MMM (음-)</h1>
+            <p class="text-lg text-[#375D49]/80">1주일에 한 번은 검사를 진행하고, <br class="md:hidden">음- 그렇구나, 하고 자기 마음을 알아주세요.</p>
         </div>
 
         <!-- 사용자 정보 -->
-        <div class="mb-8 flex flex-col md:flex-row justify-between items-center text-sm border-b-4 border-black pb-6 gap-4">
-            <div id="user-info" class="text-black flex items-center gap-3 font-extrabold text-lg">
-                <p>ID: <span id="display-user-id" class="font-mono text-sm bg-yellow-200 px-3 py-1 rounded border-2 border-black">인증 필요</span></p>
-                <p>상태: <span id="auth-status" class="text-red-600">로드 중...</span></p>
-                <button id="signout-button" class="hidden text-sm px-4 py-1 bg-black text-white rounded hover:bg-gray-800 transition border-2 border-transparent">로그아웃</button>
+        <div class="mb-8 flex flex-col md:flex-row justify-between items-center text-sm border-b-2 border-[#375D49]/20 pb-4 gap-2">
+            <div id="user-info" class="text-[#375D49] flex items-center gap-3 font-bold">
+                <p>ID: <span id="display-user-id" class="font-mono text-xs bg-[#F4E8C8] px-2 py-1 rounded text-[#375D49]">인증 필요</span></p>
+                <p>상태: <span id="auth-status" class="text-red-custom">로드 중...</span></p>
+                <button id="signout-button" class="hidden text-xs px-3 py-1 bg-[#375D49] text-white rounded hover:opacity-90 transition shadow-sm font-bold">로그아웃</button>
             </div>
-            <div id="loading-indicator" class="hidden flex items-center gap-2 text-blue-600 font-extrabold">
-                <svg class="animate-spin h-6 w-6" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <span>처리 중...</span>
+            <div id="loading-indicator" class="hidden flex items-center gap-2 text-teal-custom font-bold">
+                <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span>데이터 처리 중...</span>
             </div>
         </div>
 
         <!-- 로그인 폼 -->
-        <div id="auth-blocker" class="mb-12 p-8 bg-yellow-50 border-4 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-            <h3 class="font-extrabold text-2xl text-black mb-3">회원가입/로그인 필요</h3>
-            <p class="text-black/80 mb-6 text-lg font-bold">개인 정보의 안전한 저장을 위해<br>이메일과 비밀번호로 회원가입, 로그인 해주세요.</p>
+        <div id="auth-blocker" class="mb-10 p-8 bg-[#F4E8C8]/30 border-2 border-[#FFD16D] rounded-xl shadow-sm text-center">
+            <h3 class="font-bold text-2xl text-[#375D49] mb-2">회원가입/로그인 필요</h3>
+            <p class="text-[#375D49]/80 mb-6">개인 정보의 안전한 저장을 위해<br>이메일과 비밀번호로 회원가입, 로그인 해주세요.</p>
             
             <form id="auth-form" class="max-w-md mx-auto space-y-4">
-                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-4 input-vivid rounded-xl bg-white placeholder-gray-500">
-                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-4 input-vivid rounded-xl bg-white placeholder-gray-500">
-                <div class="flex gap-4 justify-center pt-2">
-                    <button type="submit" id="auth-submit-button" data-mode="signin" class="flex-1 px-6 py-4 bg-black text-white font-extrabold text-lg rounded-xl hover:bg-gray-800 transition shadow-lg btn-common">로그인</button>
-                    <a href="#" id="auth-mode-toggle" class="flex-1 px-6 py-4 border-4 border-black text-black font-extrabold text-lg rounded-xl hover:bg-gray-100 transition text-center flex items-center justify-center btn-common" style="box-shadow:none; border: 4px solid black;">회원가입 하기</a>
+                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49] placeholder-main/40 font-bold">
+                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49] placeholder-main/40 font-bold">
+                <div class="flex gap-3 justify-center pt-2">
+                    <button type="submit" id="auth-submit-button" data-mode="signin" class="px-6 py-2 btn-teal font-bold rounded-lg shadow-md transition transform active:scale-95 flex-1">로그인</button>
+                    <a href="#" id="auth-mode-toggle" class="px-6 py-2 border-2 border-[#51A0AF] text-[#51A0AF] font-bold rounded-lg hover:bg-[#51A0AF]/10 transition text-center flex items-center justify-center flex-1">회원가입 하기</a>
                 </div>
             </form>
         </div>
 
-        <!-- 측정 버튼들 -->
-        <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <button data-scale="PHQ9" class="p-5 rounded-2xl font-extrabold btn-common btn-teal disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                <span class="block text-2xl mb-1">PHQ-9</span>
-                <span class="text-base opacity-90 font-bold">(우울) 측정</span>
+        <!-- 측정 버튼 영역 (비비드 컬러, 검정 테두리 적용) -->
+        <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+            <button data-scale="PHQ9" class="p-4 rounded-xl font-bold btn-teal btn-vivid" disabled>
+                <span class="block text-lg">PHQ-9</span><span class="text-sm opacity-90 font-normal">(우울) 측정</span>
             </button>
-            <button data-scale="GAD7" class="p-5 rounded-2xl font-extrabold btn-common btn-yellow disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                <span class="block text-2xl mb-1">GAD-7</span>
-                <span class="text-base opacity-90 font-bold">(불안) 측정</span>
+            <button data-scale="GAD7" class="p-4 rounded-xl font-bold btn-mustard btn-vivid" disabled>
+                <span class="block text-lg">GAD-7</span><span class="text-sm opacity-90 font-normal">(불안) 측정</span>
             </button>
-            <button data-scale="PSS" class="p-5 rounded-2xl font-extrabold btn-common btn-pink disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                <span class="block text-2xl mb-1">PSS</span>
-                <span class="text-base opacity-90 font-bold">(스트레스) 측정</span>
+            <button data-scale="PSS" class="p-4 rounded-xl font-bold btn-red btn-vivid" disabled>
+                <span class="block text-lg">PSS</span><span class="text-sm opacity-90 font-normal">(스트레스) 측정</span>
             </button>
         </div>
 
         <!-- 메시지 박스 -->
-        <div id="message-box" class="hidden px-6 py-4 rounded-xl mb-8 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center" role="alert">
-            <strong id="message-title" class="font-extrabold block mb-1 text-xl"></strong> 
-            <span id="message-text" class="block font-bold text-lg"></span>
+        <div id="message-box" class="hidden px-4 py-3 rounded-xl mb-6 shadow-sm text-center" role="alert">
+            <strong id="message-title" class="font-bold block mb-1"></strong> 
+            <span id="message-text"></span>
         </div>
 
         <!-- 차트 섹션 -->
-        <div class="bg-white p-8 rounded-3xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)]">
-            <h2 class="text-3xl font-extrabold text-black mb-8 text-center">나의 MMM (음-) 프로파일</h2>
-            <div id="chart-caption" class="text-center text-sm text-gray-500 mb-10 font-bold">데이터가 없습니다. 측정을 시작해 주세요!</div>
+        <div class="bg-white p-6 rounded-xl border-2 border-[#375D49]/10 shadow-inner">
+            <h2 class="text-2xl font-bold text-[#375D49] mb-6 text-center">나의 MMM (음-) 프로파일</h2>
+            <div id="chart-caption" class="text-center text-sm text-gray-500 mb-8">데이터가 없습니다. 측정을 시작해 주세요!</div>
 
             <div class="space-y-12">
                 <!-- PHQ-9 Chart -->
-                <div class="p-6 rounded-2xl bg-white border-4 border-[#0096C7] shadow-lg">
-                    <h3 class="font-extrabold text-2xl text-[#0077B6] mb-4 flex items-center gap-3">
-                        <span class="w-4 h-4 rounded-full bg-[#0096C7] border-2 border-black"></span> 우울의 움직임 (PHQ-9)
+                <div class="p-5 rounded-xl bg-white border-l-4 border-[#51A0AF] shadow-sm">
+                    <h3 class="font-bold text-lg text-teal-custom mb-3 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-[#51A0AF]"></span> 우울의 움직임 (PHQ-9)
                     </h3>
-                    <div class="relative h-64 md:h-80"><canvas id="phqChart"></canvas></div>
+                    <div class="relative h-56 md:h-72"><canvas id="phqChart"></canvas></div>
                 </div>
                 <!-- GAD-7 Chart -->
-                <div class="p-6 rounded-2xl bg-white border-4 border-[#FFC300] shadow-lg">
-                    <h3 class="font-extrabold text-2xl text-[#B45309] mb-4 flex items-center gap-3">
-                        <span class="w-4 h-4 rounded-full bg-[#FFC300] border-2 border-black"></span> 불안의 움직임 (GAD-7)
+                <div class="p-5 rounded-xl bg-white border-l-4 border-[#FFD16D] shadow-sm">
+                    <h3 class="font-bold text-lg text-mustard-custom mb-3 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-[#FFD16D]"></span> 불안의 움직임 (GAD-7)
                     </h3>
-                    <div class="relative h-64 md:h-80"><canvas id="gadChart"></canvas></div>
+                    <div class="relative h-56 md:h-72"><canvas id="gadChart"></canvas></div>
                 </div>
                 <!-- PSS Chart -->
-                <div class="p-6 rounded-2xl bg-white border-4 border-[#FF006E] shadow-lg">
-                    <h3 class="font-extrabold text-2xl text-[#C9184A] mb-4 flex items-center gap-3">
-                        <span class="w-4 h-4 rounded-full bg-[#FF006E] border-2 border-black"></span> 내가 느끼는 스트레스 (PSS)
+                <div class="p-5 rounded-xl bg-white border-l-4 border-[#CF4638] shadow-sm">
+                    <h3 class="font-bold text-lg text-red-custom mb-3 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-[#CF4638]"></span> 내가 느끼는 스트레스 (PSS)
                     </h3>
-                    <div class="relative h-64 md:h-80"><canvas id="pssChart"></canvas></div>
+                    <div class="relative h-56 md:h-72"><canvas id="pssChart"></canvas></div>
                 </div>
             </div>
         </div>
 
         <!-- 요약 섹션 -->
-        <div class="mt-12">
-            <h2 class="text-3xl font-extrabold text-black mb-6 text-center">최근 측정 요약</h2>
+        <div class="mt-10">
+            <h2 class="text-2xl font-bold text-[#375D49] mb-6 text-center">최근 측정 요약</h2>
             <div id="latest-summary" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 card-style border-[#0096C7]">
-                    <p class="font-extrabold text-xl text-[#0077B6] mb-2">PHQ-9</p>
+                <div class="p-6 rounded-xl shadow-md border-t-4 border-[#51A0AF] bg-[#F0FDFA]">
+                    <p class="font-bold text-lg text-teal-custom mb-2">PHQ-9</p>
                     <div class="flex items-end gap-2">
-                        <p class="text-5xl font-black text-black" id="latest-phq">--</p>
-                        <p class="text-sm text-gray-600 mb-2 font-bold">/ 27점</p>
+                        <p class="text-4xl font-extrabold text-[#375D49]" id="latest-phq">--</p>
+                        <p class="text-sm text-gray-500 mb-1">/ 27점</p>
                     </div>
+                    <p class="text-xs text-gray-500 mt-2">우울 점수</p>
                 </div>
-                <div class="p-6 card-style border-[#FFC300]">
-                    <p class="font-extrabold text-xl text-[#B45309] mb-2">GAD-7</p>
+                <div class="p-6 rounded-xl shadow-md border-t-4 border-[#FFD16D] bg-[#FFFBEB]">
+                    <p class="font-bold text-lg text-mustard-custom mb-2">GAD-7</p>
                     <div class="flex items-end gap-2">
-                        <p class="text-5xl font-black text-black" id="latest-gad">--</p>
-                        <p class="text-sm text-gray-600 mb-2 font-bold">/ 21점</p>
+                        <p class="text-4xl font-extrabold text-[#375D49]" id="latest-gad">--</p>
+                        <p class="text-sm text-gray-500 mb-1">/ 21점</p>
                     </div>
+                    <p class="text-xs text-gray-500 mt-2">불안 점수</p>
                 </div>
-                <div class="p-6 card-style border-[#FF006E]">
-                    <p class="font-extrabold text-xl text-[#C9184A] mb-2">PSS</p>
+                <div class="p-6 rounded-xl shadow-md border-t-4 border-[#CF4638] bg-[#FFF1F2]">
+                    <p class="font-bold text-lg text-red-custom mb-2">PSS</p>
                     <div class="flex items-end gap-2">
-                        <p class="text-5xl font-black text-black" id="latest-pss">--</p>
-                        <p class="text-sm text-gray-600 mb-2 font-bold">/ 40점</p>
+                        <p class="text-4xl font-extrabold text-[#375D49]" id="latest-pss">--</p>
+                        <p class="text-sm text-gray-500 mb-1">/ 40점</p>
                     </div>
+                    <p class="text-xs text-gray-500 mt-2">스트레스 점수</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal -->
-    <div id="assessment-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl shadow-[10px_10px_0px_0px_rgba(255,255,255,0.2)] w-full max-w-lg overflow-hidden transform transition-all duration-300 border-4 border-black">
-            <div id="modal-header" class="p-6 text-white text-2xl font-black border-b-4 border-black"><span id="scale-title"></span> 측정</div>
+    <div id="assessment-modal" class="hidden fixed inset-0 bg-[#375D49]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300 border-2 border-[#375D49]/10">
+            <div id="modal-header" class="p-6 text-white text-xl font-bold"><span id="scale-title"></span> 측정</div>
             <div class="p-6 custom-scrollbar max-h-[70vh] overflow-y-auto"><form id="assessment-form"></form></div>
-            <div class="p-6 border-t-4 border-black flex justify-end space-x-3 bg-gray-50">
-                <button id="cancel-assessment" type="button" class="px-6 py-3 bg-white border-2 border-black text-black rounded-xl hover:bg-gray-100 font-extrabold shadow-md">취소</button>
-                <button id="submit-assessment" type="submit" form="assessment-form" class="px-6 py-3 text-white rounded-xl font-extrabold shadow-md border-2 border-black">결과 저장</button>
+            <div class="p-4 border-t border-gray-100 flex justify-end space-x-3 bg-[#F4E8C8]">
+                <button id="cancel-assessment" type="button" class="px-4 py-2 bg-white border-2 border-[#375D49]/20 text-[#375D49] rounded-lg hover:bg-gray-50 font-bold">취소</button>
+                <button id="submit-assessment" type="submit" form="assessment-form" class="px-6 py-2 text-white rounded-lg font-bold shadow-lg">결과 저장</button>
             </div>
         </div>
     </div>
-
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, addDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = 'my-mind-mirror-mmm-prod'; 
-        
-        // Firebase 설정 (사용자 정보 포함)
         const firebaseConfig = {
             apiKey: "AIzaSyDJ5lpzMYtQP_TrfqXQDF9QTmAVYNU84kE",
             authDomain: "mmm-project-13fb3.firebaseapp.com",
@@ -260,11 +223,11 @@
         let phqChartInstance = null, gadChartInstance = null, pssChartInstance = null;
         let scaleData = null;
         
-        // Vivid Colors for Charts (디자인과 통일된 색상)
+        // Colors
         const CHART_COLORS = {
-            PHQ9: { color: '#0096C7', bgColor: 'transparent' }, // Vivid Blue
-            GAD7: { color: '#FFC300', bgColor: 'transparent' }, // Vivid Yellow
-            PSS: { color: '#FF006E', bgColor: 'transparent' }   // Vivid Pink
+            PHQ9: { color: '#51A0AF', bgColor: 'transparent' },
+            GAD7: { color: '#FFD16D', bgColor: 'transparent' },
+            PSS: { color: '#CF4638', bgColor: 'transparent' }
         };
 
         const CHART_CONFIGS = {
@@ -278,13 +241,10 @@
         const reverseScoreMap = {0:4,1:3,2:2,3:1,4:0};
         
         const assessments = {
-            PHQ9: { title: "PHQ-9 (우울증 선별 도구)", colorClass: 'btn-teal', headerClass: 'bg-[#0096C7]', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 일에 흥미나 즐거움이 거의 없었다.", "2. 기분이 가라앉거나, 우울하거나, 희망이 없다고 느꼈다.", "3. 잠들거나 계속 잠을 자는 데 어려움이 있거나, 너무 많이 잤다.", "4. 피곤하거나 기력이 거의 없었다.", "5. 식욕이 없거나 과식했다.", "6. 자신을 실패자라고 느끼거나, 자신이나 가족을 실망시켰다고 느꼈다.", "7. 신문 읽기나 TV 시청처럼 평소보다 느리게 움직이거나 말을 했고, 다른 사람들이 알아챌 정도였다. 또는 이와 반대로 너무 안절부절못해서 평소보다 많이 움직였다.", "8. 집중하기가 어렵다(예: 신문 읽기, TV 시청 시).", "9. 지난 2주 동안 이 문제들로 인해 직장/학업, 가정 생활, 또는 다른 사람들과의 관계에서 어려움이 있었다면 얼마나 심각했습니까?"].slice(0, 10) },
-            GAD7: { title: "GAD-7 (범불안장애 선별 도구)", colorClass: 'btn-yellow', headerClass: 'bg-[#FFC300]', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 안절부절못하거나 평온하게 있을 수 없었다.", "2. 쉽게 짜증을 내거나 신경이 곤두서 있었다.", "3. 무엇인가 걱정하는 것을 멈출 수 없거나 조절할 수 없었다.", "4. 지나치게 걱정했다.", "5. 여러 가지 일에 대해 너무 걱정했다.", "6. 불안 때문에 휴식을 취하기 어려웠다.", "7. 너무 걱정되어서 잠들기가 어려웠다."] },
-            PSS: { title: "PSS-10 (지각된 스트레스 척도)", colorClass: 'btn-pink', headerClass: 'bg-[#FF006E]', options: responseOptionsPSS, questions: ["지난 한 달 동안, 다음 각 질문의 상황이 얼마나 자주 있었는지 응답해 주십시오. (10문항)", "1. 예기치 않은 일들 때문에 당황했던 적이 얼마나 자주 있었습니까?", "2. 생활의 중요한 일들을 통제할 수 없다고 느꼈던 적이 얼마나 자주 있었습니까?", "3. 신경이 예민해지고 스트레스를 받았다고 느꼈던 적이 얼마나 자주 있었습니까?", "4. 생활 속에서 일어나는 일들을 처리하는 데 효과적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "5. 당신에게 중요한 일들을 완벽하게 처리할 수 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "6. 당신이 통제할 수 없었던 일들 때문에 화가 났던 적이 얼마나 자주 있었습니까?", "7. 사소한 일들에 대해 성공적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "8. 쌓여 있는 일들을 잘 처리하고 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "9. 당신이 감당할 수 없을 정도로 많은 일들이 쌓여 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "10. 당신의 개인적인 일들이 계획대로 진행되고 있다고 느꼈던 적이 얼마나 자주 있었습니까?"], reverseIndices: [4, 5, 7, 8, 10] }
+            PHQ9: { title: "PHQ-9 (우울증 선별 도구)", colorClass: 'btn-teal', headerClass: 'bg-[#51A0AF]', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 일에 흥미나 즐거움이 거의 없었다.", "2. 기분이 가라앉거나, 우울하거나, 희망이 없다고 느꼈다.", "3. 잠들거나 계속 잠을 자는 데 어려움이 있거나, 너무 많이 잤다.", "4. 피곤하거나 기력이 거의 없었다.", "5. 식욕이 없거나 과식했다.", "6. 자신을 실패자라고 느끼거나, 자신이나 가족을 실망시켰다고 느꼈다.", "7. 신문 읽기나 TV 시청처럼 평소보다 느리게 움직이거나 말을 했고, 다른 사람들이 알아챌 정도였다. 또는 이와 반대로 너무 안절부절못해서 평소보다 많이 움직였다.", "8. 집중하기가 어렵다(예: 신문 읽기, TV 시청 시).", "9. 지난 2주 동안 이 문제들로 인해 직장/학업, 가정 생활, 또는 다른 사람들과의 관계에서 어려움이 있었다면 얼마나 심각했습니까?"].slice(0, 10) },
+            GAD7: { title: "GAD-7 (범불안장애 선별 도구)", colorClass: 'btn-mustard', headerClass: 'bg-[#FFD16D]', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 안절부절못하거나 평온하게 있을 수 없었다.", "2. 쉽게 짜증을 내거나 신경이 곤두서 있었다.", "3. 무엇인가 걱정하는 것을 멈출 수 없거나 조절할 수 없었다.", "4. 지나치게 걱정했다.", "5. 여러 가지 일에 대해 너무 걱정했다.", "6. 불안 때문에 휴식을 취하기 어려웠다.", "7. 너무 걱정되어서 잠들기가 어려웠다."] },
+            PSS: { title: "PSS-10 (지각된 스트레스 척도)", colorClass: 'btn-red', headerClass: 'bg-[#CF4638]', options: responseOptionsPSS, questions: ["지난 한 달 동안, 다음 각 질문의 상황이 얼마나 자주 있었는지 응답해 주십시오. (10문항)", "1. 예기치 않은 일들 때문에 당황했던 적이 얼마나 자주 있었습니까?", "2. 생활의 중요한 일들을 통제할 수 없다고 느꼈던 적이 얼마나 자주 있었습니까?", "3. 신경이 예민해지고 스트레스를 받았다고 느꼈던 적이 얼마나 자주 있었습니까?", "4. 생활 속에서 일어나는 일들을 처리하는 데 효과적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "5. 당신에게 중요한 일들을 완벽하게 처리할 수 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "6. 당신이 통제할 수 없었던 일들 때문에 화가 났던 적이 얼마나 자주 있었습니까?", "7. 사소한 일들에 대해 성공적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "8. 쌓여 있는 일들을 잘 처리하고 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "9. 당신이 감당할 수 없을 정도로 많은 일들이 쌓여 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "10. 당신의 개인적인 일들이 계획대로 진행되고 있다고 느꼈던 적이 얼마나 자주 있었습니까?"], reverseIndices: [4, 5, 7, 8, 10] }
         };
-
-
-        // --- Firebase 초기화 및 인증 관리 ---
 
         function toggleAppFeatures(enable) {
             const buttons = document.querySelectorAll('#assessment-buttons button');
@@ -295,478 +255,16 @@
             else { blocker.classList.remove('hidden'); signoutButton.classList.add('hidden'); }
         }
         
-        // --- Utility Functions: 메시지 표시 통합 ---
         function displayMessage(type, message) {
             const box = document.getElementById('message-box');
             const title = document.getElementById('message-title');
             const text = document.getElementById('message-text');
-
-            // 기본 스타일 초기화
-            box.className = 'px-6 py-4 rounded-xl mb-8 border-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] text-center'; 
-            title.className = 'font-black block mb-1 text-xl'; 
-            text.className = 'block font-bold text-lg';
-
-            if (type === 'error') { 
-                box.classList.add('bg-red-100', 'border-red-600', 'text-red-700'); 
-                title.textContent = '오류 발생!'; 
-            } else if (type === 'success') { 
-                box.classList.add('bg-green-100', 'border-green-600', 'text-green-800'); 
-                title.textContent = '알림'; 
-            } else { 
-                box.classList.add('bg-yellow-100', 'border-yellow-600', 'text-yellow-900'); 
-                title.textContent = '정보'; 
-            }
-
-            text.textContent = message;
-            box.classList.remove('hidden');
-            setTimeout(() => box.classList.add('hidden'), 8000);
+            box.className = 'px-4 py-3 rounded-xl mb-6 shadow-sm text-center'; title.className = 'font-bold block mb-1'; text.className = 'block sm:inline';
+            if (type === 'error') { box.classList.add('bg-red-100', 'border', 'border-red-400', 'text-red-700'); title.textContent = '오류 발생!'; } 
+            else if (type === 'success') { box.classList.add('bg-green-100', 'border', 'border-green-400', 'text-green-700'); title.textContent = '알림'; } 
+            else { box.classList.add('bg-yellow-100', 'border', 'border-yellow-400', 'text-yellow-700'); title.textContent = '정보'; }
+            text.textContent = message; box.classList.remove('hidden'); setTimeout(() => box.classList.add('hidden'), 8000);
         }
-
-        // --- 인증 로직 함수 ---
 
         async function signInUser(email, password) {
             showLoading(true);
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                displayMessage('success', "로그인 성공!"); 
-            } catch (error) {
-                console.error("로그인 실패:", error.code, error.message);
-                displayMessage('error', `로그인 실패: ${error.message.split('(')[0] || "이메일 또는 비밀번호를 확인해주세요."}`);
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function signUpUser(email, password) {
-            showLoading(true);
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                displayMessage('success', "회원가입 및 자동 로그인이 완료되었습니다!"); 
-            } catch (error) {
-                console.error("회원가입 실패:", error.code, error.message);
-                displayMessage('error', `회원가입 실패: ${error.message.split('(')[0] || "이미 존재하는 계정이거나 형식이 잘못되었습니다."}`); 
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        function handleSignOut() {
-            showLoading(true);
-            signOut(auth).then(() => {
-                displayMessage('success', "로그아웃되었습니다."); 
-            }).catch((error) => {
-                displayMessage('error', "로그아웃 중 오류가 발생했습니다.");
-                console.error("로그아웃 오류:", error);
-            }).finally(() => {
-                showLoading(false);
-            });
-        }
-        
-        async function initFirebase() {
-            // Firebase 설정 객체가 비어 있는지 확인
-            if (!firebaseConfig || !firebaseConfig.apiKey) {
-                document.getElementById('auth-status').textContent = '설정 오류';
-                displayMessage('error', "Firebase 설정이 정의되지 않았습니다. index.html 파일을 수정해 주세요.");
-                toggleAppFeatures(false);
-                return;
-            }
-
-            try {
-                setLogLevel('error');
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                document.getElementById('auth-status').textContent = '대기 중...';
-                
-                // onAuthStateChanged: 사용자 로그인/로그아웃 상태 변화를 감지
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        // 로그인 성공: userId 설정 및 UI 업데이트
-                        userId = user.uid;
-                        document.getElementById('auth-status').textContent = `인증 완료`;
-                        document.getElementById('display-user-id').textContent = userId;
-                        toggleAppFeatures(true);
-                        setupRealtimeListener();
-                    } else {
-                        // 로그아웃 또는 인증 실패: UI 업데이트 및 기능 비활성화
-                        userId = null;
-                        document.getElementById('auth-status').textContent = '로그인 필요';
-                        document.getElementById('display-user-id').textContent = '인증 필요';
-                        toggleAppFeatures(false);
-                        // 차트 및 요약 데이터 초기화
-                        updateCharts([]);
-                        updateSummary([]);
-                    }
-                });
-
-            } catch (error) {
-                console.error("Firebase 초기화 오류:", error);
-                displayMessage('error', "Firebase 초기화에 실패했습니다. 설정을 확인해 주세요.");
-                toggleAppFeatures(false);
-            }
-        }
-
-        // --- 이벤트 리스너 연결 ---
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const authForm = document.getElementById('auth-form');
-            const authSubmitButton = document.getElementById('auth-submit-button');
-            const authModeToggle = document.getElementById('auth-mode-toggle');
-            
-            if(authForm) {
-                authForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const email = document.getElementById('auth-email').value;
-                    const password = document.getElementById('auth-password').value;
-                    const mode = authSubmitButton.dataset.mode;
-
-                    if (mode === 'signin') {
-                        signInUser(email, password);
-                    } else {
-                        signUpUser(email, password);
-                    }
-                });
-
-                authModeToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    if (authSubmitButton.dataset.mode === 'signin') {
-                        authSubmitButton.dataset.mode = 'signup';
-                        authSubmitButton.textContent = '회원가입';
-                        authModeToggle.textContent = '로그인 화면으로 돌아가기';
-                    } else {
-                        authSubmitButton.dataset.mode = 'signin';
-                        authSubmitButton.textContent = '로그인';
-                        authModeToggle.textContent = '회원가입 하기';
-                    }
-                });
-            }
-
-            document.getElementById('signout-button').addEventListener('click', handleSignOut);
-            
-            initFirebase();
-        });
-        
-        // --- Firestore Data Operations ---
-
-        function getCollectionRef() {
-            if (!db || !userId) return null;
-            // Private data path: /artifacts/{appId}/users/{userId}/stress_trackers
-            const path = `artifacts/${appId}/users/${userId}/stress_trackers`;
-            return collection(db, path);
-        }
-
-        function setupRealtimeListener() {
-            const colRef = getCollectionRef();
-            if (!colRef) return;
-            
-            // 데이터 변경 리스너 설정
-            onSnapshot(colRef, (snapshot) => {
-                const results = [];
-                snapshot.forEach((doc) => { results.push({ id: doc.id, ...doc.data() }); });
-                
-                // 스마트 중복 제거 (1분 간격)
-                results.sort((a, b) => (a.timestamp ? a.timestamp.toDate() : 0) - (b.timestamp ? b.timestamp.toDate() : 0));
-                const filteredResults = [];
-                let lastTime = 0;
-                results.forEach(item => {
-                    const itemTime = item.timestamp ? item.timestamp.toDate().getTime() : 0;
-                    if (itemTime - lastTime > 60000) { 
-                        filteredResults.push(item);
-                        lastTime = itemTime;
-                    }
-                });
-
-                scaleData = filteredResults;
-                updateCharts(scaleData);
-                updateSummary(scaleData);
-            }, (error) => {
-                console.error("데이터 실시간 리스너 오류:", error);
-                displayMessage('error', "데이터를 불러오는 중 오류가 발생했습니다.");
-            });
-        }
-        
-        async function saveAssessmentResult(result) {
-            const colRef = getCollectionRef();
-            if (!colRef) {
-                displayMessage('error', "로그인이 필요합니다.");
-                return;
-            }
-            
-            showLoading(true);
-            try {
-                await addDoc(colRef, { ...result, timestamp: serverTimestamp() });
-                displayMessage('success', "저장 완료!"); 
-            } catch (error) {
-                console.error("측정 결과 저장 오류:", error);
-                displayMessage('error', "저장 실패"); 
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // --- Chart & UI Rendering ---
-        
-        function createOrUpdateChart(chartId, dataLabels, scoreData, config) {
-            const ctx = document.getElementById(chartId).getContext('2d');
-            let instance;
-            if (config.instance === 'phqChartInstance') instance = phqChartInstance;
-            else if (config.instance === 'gadChartInstance') instance = gadChartInstance;
-            else if (config.instance === 'pssChartInstance') instance = pssChartInstance;
-
-            if (instance) {
-                instance.data.labels = dataLabels;
-                instance.data.datasets[0].data = scoreData;
-                // 데이터 포인트가 1개 초과일 때만 선 표시
-                instance.data.datasets[0].showLine = scoreData.filter(v => v !== null).length > 1;
-                instance.update();
-                return instance;
-            }
-            
-            // 데이터 포인트가 1개 초과일 때만 선 표시
-            const shouldShowLine = scoreData.filter(v => v !== null).length > 1;
-
-            const newInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: dataLabels,
-                    datasets: [{
-                        label: config.label, 
-                        data: scoreData, 
-                        borderColor: config.color, 
-                        backgroundColor: 'transparent',
-                        tension: 0.4, 
-                        fill: false, 
-                        pointBackgroundColor: config.color, 
-                        pointBorderColor: '#fff', 
-                        pointBorderWidth: 3, 
-                        pointRadius: 6, 
-                        pointHoverRadius: 8,
-                        showLine: shouldShowLine 
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { enabled: true } },
-                    elements: {
-                        line: { tension: 0.4 }, 
-                        point: { pointStyle: 'circle' }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, max: config.maxScore, title: { display: true, text: '점수' } , ticks: { precision: 0 } },
-                        x: { 
-                            type: 'category', 
-                            title: { display: true, text: '측정 시점' }, 
-                            ticks: { autoSkip: true, maxTicksLimit: 7 } 
-                        }
-                    }
-                }
-            });
-            
-            if (config.instance === 'phqChartInstance') phqChartInstance = newInstance;
-            else if (config.instance === 'gadChartInstance') gadChartInstance = newInstance;
-            else if (config.instance === 'pssChartInstance') pssChartInstance = newInstance;
-
-            return newInstance;
-        }
-
-        function updateCharts(data) {
-            if (data.length === 0) {
-                document.getElementById('chart-caption').textContent = "데이터가 없습니다. 측정을 시작해 주세요!";
-                return;
-            }
-
-            document.getElementById('chart-caption').textContent = `총 ${data.length}건의 측정 기록이 있습니다.`;
-            
-            // 독립적인 차트 데이터 필터링 및 그리기
-            const phqData = data.filter(d => d.phq9 !== undefined);
-            const phqLabels = phqData.map(item => formatTimestamp(item.timestamp));
-            const phqScores = phqData.map(item => item.phq9);
-            createOrUpdateChart(CHART_CONFIGS.PHQ9.id, phqLabels, phqScores, CHART_CONFIGS.PHQ9);
-            
-            const gadData = data.filter(d => d.gad7 !== undefined);
-            const gadLabels = gadData.map(item => formatTimestamp(item.timestamp));
-            const gadScores = gadData.map(item => item.gad7);
-            createOrUpdateChart(CHART_CONFIGS.GAD7.id, gadLabels, gadScores, CHART_CONFIGS.GAD7);
-
-            const pssData = data.filter(d => d.pss !== undefined);
-            const pssLabels = pssData.map(item => formatTimestamp(item.timestamp));
-            const pssScores = pssData.map(item => item.pss);
-            createOrUpdateChart(CHART_CONFIGS.PSS.id, pssLabels, pssScores, CHART_CONFIGS.PSS);
-        }
-
-        function formatTimestamp(timestamp) {
-            if (!timestamp) return 'N/A';
-            const date = timestamp.toDate();
-            const year = String(date.getFullYear()).slice(-2);
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            return `${year}/${month}/${day} ${hours}:${minutes}`;
-        }
-
-        function updateSummary(data) {
-            const latestScores = {
-                phq9: '--',
-                gad7: '--',
-                pss: '--'
-            };
-
-            for (let i = data.length - 1; i >= 0; i--) {
-                const item = data[i];
-                if (latestScores.phq9 === '--' && item.phq9 !== undefined) latestScores.phq9 = item.phq9;
-                if (latestScores.gad7 === '--' && item.gad7 !== undefined) latestScores.gad7 = item.gad7;
-                if (latestScores.pss === '--' && item.pss !== undefined) latestScores.pss = item.pss;
-                
-                if (latestScores.phq9 !== '--' && latestScores.gad7 !== '--' && latestScores.pss !== '--') break;
-            }
-
-            document.getElementById('latest-phq').textContent = latestScores.phq9;
-            document.getElementById('latest-gad').textContent = latestScores.gad7;
-            document.getElementById('latest-pss').textContent = latestScores.pss;
-        }
-
-        let currentScale = '';
-
-        function openAssessmentModal(scale) {
-            if (!userId) {
-                displayMessage('error', "로그인이 필요합니다.");
-                return;
-            }
-
-            currentScale = scale;
-            const assessment = assessments[scale];
-            
-            document.getElementById('scale-title').textContent = assessment.title.split(' ')[0];
-            
-            const header = document.getElementById('modal-header');
-            ['bg-[#0096C7]', 'bg-[#FFC300]', 'bg-[#FF006E]'].forEach(c => header.classList.remove(c));
-            header.classList.add(assessment.headerClass.split(' ')[0]); 
-
-            const submitButton = document.getElementById('submit-assessment');
-            ['btn-teal', 'btn-mustard', 'btn-red'].forEach(c => submitButton.classList.remove(c));
-            submitButton.classList.add(assessment.colorClass);
-
-            const form = document.getElementById('assessment-form');
-            form.innerHTML = '';
-            
-            let introText = `<p class="text-black mb-4 font-bold text-lg border-b-4 border-gray-200 pb-2">${assessment.questions[0]}</p>`;
-            form.insertAdjacentHTML('beforeend', introText);
-
-            const questionsToRender = scale === 'PHQ9' ? assessment.questions.slice(1, 10) : assessment.questions.slice(1);
-            
-            questionsToRender.forEach((questionText, index) => {
-                const qNum = index + 1;
-                let questionHtml = `
-                    <div class="mb-6 p-5 border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white">
-                        <p class="font-bold text-black mb-3 text-lg">${questionText}</p>
-                        <div class="space-y-3">
-                `;
-                
-                assessment.options.forEach(option => {
-                    const uniqueId = `${scale}-q${qNum}-v${option.value}`;
-                    questionHtml += `
-                        <label for="${uniqueId}" class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition border-2 border-transparent hover:border-black">
-                            <input type="radio" id="${uniqueId}" name="q${qNum}" value="${option.value}" required class="w-5 h-5 text-black focus:ring-black">
-                            <span class="ml-3 text-black font-bold">${option.text}</span>
-                        </label>
-                    `;
-                });
-
-                questionHtml += `
-                        </div>
-                    </div>
-                `;
-                form.insertAdjacentHTML('beforeend', questionHtml);
-            });
-
-            document.getElementById('assessment-modal').classList.remove('hidden');
-        }
-
-        function closeAssessmentModal() {
-            document.getElementById('assessment-modal').classList.add('hidden');
-            document.getElementById('assessment-form').reset();
-        }
-
-        function calculateScore(scale, formData) {
-            let totalScore = 0;
-            const assessment = assessments[scale];
-            const numQuestionsForScoring = scale === 'PHQ9' ? 8 : assessment.questions.length - 1;
-
-            for (let i = 1; i <= numQuestionsForScoring; i++) {
-                const key = `q${i}`;
-                const value = parseInt(formData.get(key));
-                
-                if (isNaN(value)) {
-                    displayMessage('error', `'${i}번 질문'에 응답해 주세요.`);
-                    return null; 
-                }
-
-                if (scale === 'PSS' && assessment.reverseIndices.includes(i)) {
-                    const finalScore = reverseScoreMap[value];
-                    totalScore += finalScore;
-                } else {
-                    totalScore += value;
-                }
-            }
-            if (scale === 'PHQ9' && isNaN(parseInt(formData.get('q9')))) {
-                displayMessage('error', `'9번 질문'에 응답해 주세요.`);
-                return null;
-            }
-            
-            return totalScore;
-        }
-
-        document.getElementById('assessment-form').addEventListener('submit', async function(e) {
-            e.preventDefault(); 
-            const submitButton = document.getElementById('submit-assessment');
-            const originalText = submitButton.textContent;
-            submitButton.disabled = true;
-            submitButton.textContent = '저장 중...';
-
-            const formData = new FormData(e.target);
-            const score = calculateScore(currentScale, formData); 
-            
-            if (score === null) {
-                submitButton.disabled = false;
-                submitButton.textContent = originalText;
-                return;
-            }
-            
-            const result = {};
-            if (currentScale === 'PHQ9') result.phq9 = score;
-            else if (currentScale === 'GAD7') result.gad7 = score;
-            else if (currentScale === 'PSS') result.pss = score;
-
-            await saveAssessmentResult(result);
-            
-            closeAssessmentModal();
-            submitButton.disabled = false;
-            submitButton.textContent = originalText;
-        });
-
-        document.getElementById('assessment-buttons').addEventListener('click', (e) => {
-            const button = e.target.closest('button[data-scale]');
-            if (button) {
-                openAssessmentModal(button.dataset.scale);
-            }
-        });
-
-        document.getElementById('cancel-assessment').addEventListener('click', closeAssessmentModal);
-
-
-        // --- Utility Functions ---
-
-        function showLoading(isLoading) {
-            const loadingDiv = document.getElementById('loading-indicator');
-            if (isLoading) {
-                loadingDiv.classList.remove('hidden');
-            } else {
-                loadingDiv.classList.add('hidden');
-            }
-        }
-        
-    </script>
-</body>
-</html>
