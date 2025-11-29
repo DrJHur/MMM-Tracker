@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Mind Mirror (MMM)</title>
+    <!-- Pretendard Font -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css" />
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <style>
         /* Custom scrollbar */
@@ -41,8 +44,8 @@
         .bg-grenadine { background-color: #D44726; }
         .text-grenadine { color: #D44726; }
         .hover-bg-grenadine:hover { background-color: #C03615; }
-
-        /* Card Backgrounds */
+        
+        /* Chart specific styles */
         .phq-card-color { background-color: rgba(172, 202, 178, 0.15); }
         .gad-card-color { background-color: rgba(233, 167, 82, 0.15); }
         .pss-card-color { background-color: rgba(212, 71, 38, 0.1); }
@@ -50,9 +53,10 @@
 </head>
 <body class="font-sans min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
 
+    <!-- Main Container -->
     <div id="app" class="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl rounded-2xl p-6 md:p-10 border border-[#ACCAB2]/30 relative z-10 my-8">
 
-        <!-- Title -->
+        <!-- Title Wrapper -->
         <div class="relative mb-8 pt-4"> 
             <h1 class="text-3xl font-bold text-cafelatte mb-2 text-center relative z-10">My Mind Mirror, MMM (음-)</h1>
             <p class="text-sm text-cafelatte/80 text-center relative z-10">1주일에 한 번은 검사를 진행하고, 음- 그렇구나,하고 자기 마음을 알아주세요.</p>
@@ -71,14 +75,14 @@
             </div>
         </div>
 
-        <!-- Login Form -->
+        <!-- Login/Signup Form -->
         <div id="auth-blocker" class="mb-8 p-6 bg-[#FFF8E6] border border-beeswax/30 rounded-xl shadow-sm">
             <h3 class="font-bold text-lg text-cafelatte mb-2">회원가입/로그인 필요</h3>
             <p class="text-cafelatte/80 mb-4 text-sm">개인 정보의 안전한 저장을 위해 이메일과 비밀번호로 회원가입, 로그인 해주세요.</p>
             
             <form id="auth-form">
-                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-3 mb-3 border border-[#ACCAB2] rounded-lg text-cafelatte bg-white/80 placeholder-cafelatte/50 focus:outline-none focus:ring-2 focus:ring-[#ACCAB2]">
-                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-3 mb-4 border border-[#ACCAB2] rounded-lg text-cafelatte bg-white/80 placeholder-cafelatte/50 focus:outline-none focus:ring-2 focus:ring-[#ACCAB2]">
+                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-3 mb-3 border border-[#ACCAB2] rounded-lg focus:ring-2 focus:ring-[#ACCAB2] focus:outline-none text-cafelatte bg-white/80 placeholder-cafelatte/50">
+                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-3 mb-4 border border-[#ACCAB2] rounded-lg focus:ring-2 focus:ring-[#ACCAB2] focus:outline-none text-cafelatte bg-white/80 placeholder-cafelatte/50">
                 <div class="flex justify-between items-center">
                     <button type="submit" id="auth-submit-button" data-mode="signin" class="px-6 py-2 bg-beeswax text-white font-bold rounded-lg hover-bg-beeswax transition shadow-md">로그인</button>
                     <a href="#" id="auth-mode-toggle" class="text-sm text-grenadine hover:underline transition font-medium">회원가입 하기</a>
@@ -86,7 +90,7 @@
             </form>
         </div>
 
-        <!-- Buttons with Vintage Colors -->
+        <!-- Assessment Buttons -->
         <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <button data-scale="PHQ9" class="p-4 rounded-xl text-white font-bold shadow-md transition-transform transform hover:scale-[1.02] bg-darlington hover-bg-darlington disabled:opacity-50 disabled:cursor-not-allowed" disabled>PHQ-9 (우울) 측정</button>
             <button data-scale="GAD7" class="p-4 rounded-xl text-white font-bold shadow-md transition-transform transform hover:scale-[1.02] bg-beeswax hover-bg-beeswax disabled:opacity-50 disabled:cursor-not-allowed" disabled>GAD-7 (불안) 측정</button>
@@ -98,7 +102,7 @@
             <strong id="message-title" class="font-bold"></strong> <span id="message-text"></span>
         </div>
 
-        <!-- Charts -->
+        <!-- Chart Section -->
         <div class="bg-white p-6 rounded-xl border border-[#ACCAB2]/30 shadow-sm">
             <h2 class="text-xl font-semibold text-cafelatte mb-6 text-center">나의 MMM (음-) 프로파일</h2>
             <div id="chart-caption" class="text-center text-xs text-cafelatte/60 mb-4">데이터가 없습니다. 측정을 시작해 주세요!</div>
@@ -119,7 +123,7 @@
             </div>
         </div>
 
-        <!-- Summary -->
+        <!-- Summary Section -->
         <div class="mt-8">
             <h2 class="text-xl font-semibold text-cafelatte mb-4">최근 측정 요약</h2>
             <div id="latest-summary" class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -142,14 +146,14 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Assessment Modal -->
     <div id="assessment-modal" class="hidden fixed inset-0 bg-[#78614D]/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300">
             <div id="modal-header" class="p-6 text-white text-xl font-bold rounded-t-xl"><span id="scale-title"></span> 측정</div>
             <div class="p-6 custom-scrollbar max-h-[70vh] overflow-y-auto"><form id="assessment-form"></form></div>
             <div class="p-4 border-t border-gray-100 flex justify-end space-x-3 bg-gray-50">
                 <button id="cancel-assessment" type="button" class="px-4 py-2 bg-gray-200 text-cafelatte rounded-lg">취소</button>
-                <button id="submit-assessment" type="submit" form="assessment-form" class="px-4 py-2 text-white rounded-lg font-bold">결과 저장</button>
+                <button id="submit-assessment" type="submit" form="assessment-form" class="px-4 py-2 text-white rounded-lg font-bold shadow-md transition">결과 저장</button>
             </div>
         </div>
     </div>
@@ -160,7 +164,8 @@
         import { getFirestore, addDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = 'my-mind-mirror-mmm-prod'; 
-        // 🚨 본인의 Firebase 설정으로 교체
+        
+        // 사용자님의 Firebase 설정 정보 (반영됨)
         const firebaseConfig = {
             apiKey: "AIzaSyDJ5lpzMYtQP_TrfqXQDF9QTmAVYNU84kE",
             authDomain: "mmm-project-13fb3.firebaseapp.com",
@@ -175,7 +180,7 @@
         let phqChartInstance = null, gadChartInstance = null, pssChartInstance = null;
         let scaleData = null;
         
-        // Vintage Palette Colors for Charts
+        // Vintage Palette for Charts
         const CHART_COLORS = {
             PHQ9: { color: '#ACCAB2', bgColor: 'transparent' }, // Darlington
             GAD7: { color: '#E9A752', bgColor: 'transparent' }, // Beeswax
@@ -274,7 +279,19 @@
             onSnapshot(colRef, (snapshot) => {
                 const results = []; snapshot.forEach((doc) => { results.push({ id: doc.id, ...doc.data() }); });
                 results.sort((a, b) => (a.timestamp ? a.timestamp.toDate() : 0) - (b.timestamp ? b.timestamp.toDate() : 0));
-                scaleData = results; updateCharts(scaleData); updateSummary(scaleData);
+                
+                // Smart Deduplication: Sort by time, filter out items within 60 seconds of previous item
+                const filteredResults = [];
+                let lastTime = 0;
+                results.forEach(item => {
+                    const itemTime = item.timestamp ? item.timestamp.toDate().getTime() : 0;
+                    if (itemTime - lastTime > 60000) { 
+                        filteredResults.push(item);
+                        lastTime = itemTime;
+                    }
+                });
+
+                scaleData = filteredResults; updateCharts(scaleData); updateSummary(scaleData);
             }, (error) => { console.error(error); displayMessage('error', "데이터 불러오기 오류"); });
         }
         
@@ -296,11 +313,15 @@
             if (instance) { 
                 instance.data.labels = dataLabels; 
                 instance.data.datasets[0].data = scoreData;
+                // 데이터 포인트가 1개 초과일 때만 선 표시
                 instance.data.datasets[0].showLine = scoreData.filter(v => v !== null).length > 1;
-                instance.update(); return instance; 
+                instance.update(); 
+                return instance; 
             }
 
+            // 데이터 포인트가 1개 초과일 때만 선 표시
             const shouldShowLine = scoreData.filter(v => v !== null).length > 1;
+
             const newInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -439,4 +460,9 @@
             submitButton.disabled = false;
             submitButton.textContent = originalText;
         });
-        document.getElementById('assessment-buttons
+        document.getElementById('assessment-buttons').addEventListener('click', (e) => { const button = e.target.closest('button[data-scale]'); if (button) openAssessmentModal(button.dataset.scale); });
+        document.getElementById('cancel-assessment').addEventListener('click', closeAssessmentModal);
+        function showLoading(isLoading) { const loadingDiv = document.getElementById('loading-indicator'); if (isLoading) { loadingDiv.classList.remove('hidden'); } else { loadingDiv.classList.add('hidden'); } }
+    </script>
+</body>
+</html>
