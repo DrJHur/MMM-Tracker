@@ -39,6 +39,13 @@
             width: 100% !important;
             height: 100% !important;
         }
+
+        /* New Cloud Filter Style: Light Sky Blue colored pencil look */
+        .cloud-filter {
+            filter: drop-shadow(0 0 10px rgba(135, 206, 250, 0.5)) saturate(1.5); /* Soft, light blue pencil look */
+            fill: #87CEFA; /* Light Sky Blue */
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
@@ -54,9 +61,9 @@
         <!-- Title and Cloud Wrapper -->
         <div class="relative mb-8 pt-4"> 
             <!-- New Cloud Element (Behind the Title) -->
-            <div class="absolute inset-x-0 -top-6 flex justify-center items-center z-0 opacity-80 pointer-events-none">
-                <!-- Simple SVG Cloud for aesthetic backdrop -->
-                <svg class="w-96 h-48 text-white fill-current blur-md shadow-lg" viewBox="0 0 100 40" preserveAspectRatio="none">
+            <div class="absolute inset-x-0 -top-6 flex justify-center items-center z-0 pointer-events-none">
+                <!-- Simple SVG Cloud for aesthetic backdrop with color pencil style -->
+                <svg class="w-96 h-48 cloud-filter" viewBox="0 0 100 40" preserveAspectRatio="none">
                     <path d="M 5 25 C 5 10, 20 5, 30 10 S 45 5, 60 10 S 75 5, 90 15 C 95 25, 80 35, 70 30 C 70 35, 60 38, 50 35 C 40 38, 30 35, 30 30 C 20 35, 15 30, 10 25 Z" />
                 </svg>
             </div>
@@ -84,8 +91,8 @@
 
         <!-- Authentication Prompt/Blocker - Now includes Login Form -->
         <div id="auth-blocker" class="mb-6 p-6 bg-red-50 border border-red-300 rounded-xl">
-            <h3 class="font-bold text-lg text-red-700 mb-2"> 회원가입/로그인 필요</h3>
-            <p class="text-red-600 mb-4">개인 정보의 안전한 저장을 위해 이메일과 비밀번호로 회원가입/로그인을 해주세요.</p>
+            <h3 class="font-bold text-lg text-red-700 mb-2">🚨 로그인 / 회원가입 필요</h3>
+            <p class="text-red-600 mb-4">개인 데이터의 안전한 저장을 위해 이메일과 비밀번호로 로그인하거나 회원가입을 해주세요.</p>
             
             <!-- Login/Signup Form UI -->
             <form id="auth-form">
@@ -131,7 +138,7 @@
         <!-- Chart Section (Now individual charts) -->
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
             <!-- Subtitle Change - Added text-center -->
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center"> 나의 MMM (음-) 프로파일 </h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">마음의 파고</h2>
             
             <div id="chart-caption" class="text-center text-sm text-gray-500 mb-4">데이터가 없습니다. 측정을 시작해 주세요!</div>
 
@@ -322,7 +329,6 @@
         }
 
         // 모든 오류 처리는 displayMessage('error', ...)를 사용합니다.
-        // Identifier 'showError' has already been declared 오류를 피하기 위해 const showError 정의를 제거합니다.
         
         // --- 인증 로직 함수 ---
 
@@ -513,12 +519,15 @@
             }
 
             const newInstance = new Chart(ctx, {
-                type: 'line',
+                type: 'line', // 선 그래프 유지
                 data: {
                     labels: dataLabels,
                     datasets: [{
                         label: config.label, data: scoreData, borderColor: config.color, backgroundColor: config.bgColor,
-                        tension: 0.4, fill: true, pointBackgroundColor: config.color, borderWidth: 2
+                        tension: 0.4, fill: true, pointBackgroundColor: config.color, borderWidth: 2,
+                        showLine: false, // 측정치 간 연결선 제거
+                        pointRadius: 5,   // 점(dot) 크기 지정
+                        pointHoverRadius: 7,
                     }]
                 },
                 options: {
@@ -526,7 +535,13 @@
                     plugins: { legend: { display: false }, tooltip: { enabled: true } },
                     scales: {
                         y: { beginAtZero: true, max: config.maxScore, title: { display: true, text: '점수' } , ticks: { precision: 0 } },
-                        x: { title: { display: true, text: '측정일' }, ticks: { autoSkip: true, maxTicksLimit: 7 } }
+                        x: { 
+                            title: { display: true, text: '측정일시' }, 
+                            ticks: { 
+                                autoSkip: true, 
+                                maxTicksLimit: 7 
+                            } 
+                        }
                     }
                 }
             });
@@ -548,10 +563,17 @@
             }
 
             document.getElementById('chart-caption').textContent = `총 ${data.length}건의 측정 기록이 있습니다.`;
+            
+            // X축 레이블을 YY/MM/DD HH:mm 형식으로 포맷팅
             const labels = data.map(item => {
                 if (item.timestamp) {
                     const date = item.timestamp.toDate();
-                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                    const year = String(date.getFullYear()).slice(-2); // YY
+                    const month = String(date.getMonth() + 1).padStart(2, '0'); // MM
+                    const day = String(date.getDate()).padStart(2, '0'); // DD
+                    const hours = String(date.getHours()).padStart(2, '0'); // HH
+                    const minutes = String(date.getMinutes()).padStart(2, '0'); // mm
+                    return `${year}/${month}/${day} ${hours}:${minutes}`;
                 }
                 return 'N/A';
             });
