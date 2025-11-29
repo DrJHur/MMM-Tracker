@@ -62,4 +62,368 @@
             <p class="text-red-600 mb-4">개인 정보의 안전한 저장을 위해 이메일과 비밀번호로 회원가입, 로그인 해주세요.</p>
             
             <form id="auth-form">
-                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-2 mb-3 border border-gray-300
+                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 text-gray-800">
+                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 text-gray-800">
+                <div class="flex justify-between items-center">
+                    <button type="submit" id="auth-submit-button" data-mode="signin" class="px-5 py-2 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition">로그인</button>
+                    <a href="#" id="auth-mode-toggle" class="text-sm text-sky-600 hover:text-sky-700 transition">회원가입 하기</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Assessment Buttons -->
+        <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <button data-scale="PHQ9" class="p-4 rounded-xl text-white font-semibold shadow-lg transition-transform transform hover:scale-[1.02] bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>PHQ-9 (우울) 측정</button>
+            <button data-scale="GAD7" class="p-4 rounded-xl text-white font-semibold shadow-lg transition-transform transform hover:scale-[1.02] bg-teal-700 hover:bg-teal-800 disabled:opacity-50 disabled:cursor-not-allowed" disabled>GAD-7 (불안) 측정</button>
+            <button data-scale="PSS" class="p-4 rounded-xl text-white font-semibold shadow-lg transition-transform transform hover:scale-[1.02] bg-rose-600 hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>PSS (스트레스) 측정</button>
+        </div>
+
+        <!-- Message Box -->
+        <div id="message-box" class="hidden px-4 py-3 rounded-xl mb-6" role="alert">
+            <strong id="message-title" class="font-bold"></strong>
+            <span id="message-text" class="block sm:inline"></span>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">나의 MMM (음-) 프로파일</h2>
+            <div id="chart-caption" class="text-center text-sm text-gray-500 mb-4">데이터가 없습니다. 측정을 시작해 주세요!</div>
+
+            <div class="space-y-8">
+                <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">우울의 움직임 (PHQ-9)</h3>
+                    <div class="relative h-48 md:h-64"><canvas id="phqChart"></canvas></div>
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">불안의 움직임 (GAD-7)</h3>
+                    <div class="relative h-48 md:h-64"><canvas id="gadChart"></canvas></div>
+                </div>
+                <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3">내가 느끼는 스트레스 (PSS)</h3>
+                    <div class="relative h-48 md:h-64"><canvas id="pssChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">최근 측정 요약</h2>
+            <div id="latest-summary" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 phq-card-color rounded-xl shadow-md">
+                    <p class="font-bold text-lg text-gray-800">PHQ-9</p>
+                    <p class="text-3xl font-extrabold text-gray-900" id="latest-phq">--</p>
+                    <p class="text-sm text-gray-600">우울 점수 (최대 27점)</p>
+                </div>
+                <div class="p-4 gad-card-color rounded-xl shadow-md">
+                    <p class="font-bold text-lg text-gray-800">GAD-7</p>
+                    <p class="text-3xl font-extrabold text-gray-900" id="latest-gad">--</p>
+                    <p class="text-sm text-gray-600">불안 점수 (최대 21점)</p>
+                </div>
+                <div class="p-4 pss-card-color rounded-xl shadow-md">
+                    <p class="font-bold text-lg text-gray-800">PSS</p>
+                    <p class="text-3xl font-extrabold text-gray-900" id="latest-pss">--</p>
+                    <p class="text-sm text-gray-600">지각된 스트레스 점수 (최대 40점)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assessment Modal -->
+    <div id="assessment-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300">
+            <div id="modal-header" class="p-6 text-white text-xl font-bold rounded-t-xl bg-indigo-600">
+                <span id="scale-title"></span> 측정
+            </div>
+            <div class="p-6 custom-scrollbar max-h-[70vh] overflow-y-auto">
+                <form id="assessment-form"></form>
+            </div>
+            <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button id="cancel-assessment" type="button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium transition">취소</button>
+                <button id="submit-assessment" type="submit" form="assessment-form" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold transition">결과 저장</button>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, addDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = 'my-mind-mirror-mmm-prod'; 
+        // 사용자가 제공한 Firebase 설정 정보
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJ5lpzMYtQP_TrfqXQDF9QTmAVYNU84kE",
+            authDomain: "mmm-project-13fb3.firebaseapp.com",
+            projectId: "mmm-project-13fb3",
+            storageBucket: "mmm-project-13fb3.firebasestorage.app",
+            messagingSenderId: "845948284004",
+            appId: "1:845948284004:web:aec6d670eb1e656a5a0371",
+            measurementId: "G-3TJ21YRM59"
+        };
+
+        let app, db, auth, userId = null;
+        let phqChartInstance = null, gadChartInstance = null, pssChartInstance = null;
+        let scaleData = null;
+        
+        const CHART_COLORS = {
+            PHQ9: { color: 'rgb(79, 70, 229)', bgColor: 'transparent' }, // Indigo
+            GAD7: { color: 'rgb(13, 148, 136)', bgColor: 'transparent' }, // Teal
+            PSS: { color: 'rgb(225, 29, 72)', bgColor: 'transparent' } // Rose
+        };
+
+        const CHART_CONFIGS = {
+            PHQ9: { id: 'phqChart', label: 'PHQ-9 (우울)', maxScore: 27, prop: 'phq9', instance: 'phqChartInstance', ...CHART_COLORS.PHQ9 },
+            GAD7: { id: 'gadChart', label: 'GAD-7 (불안)', maxScore: 21, prop: 'gad7', instance: 'gadChartInstance', ...CHART_COLORS.GAD7 },
+            PSS: { id: 'pssChart', label: 'PSS (스트레스)', maxScore: 40, prop: 'pss', instance: 'pssChartInstance', ...CHART_COLORS.PSS }
+        };
+
+        const responseOptionsPHQGAD = [ { value: 0, text: "전혀 없음" }, { value: 1, text: "몇 일" }, { value: 2, text: "일주일에 반 이상" }, { value: 3, text: "거의 매일" }];
+        const responseOptionsPSS = [ { value: 0, text: "전혀 없다" }, { value: 1, text: "거의 없다" }, { value: 2, text: "때때로 있다" }, { value: 3, text: "자주 있다" }, { value: 4, text: "매우 자주 있다" }];
+        const reverseScoreMap = { 0: 4, 1: 3, 2: 2, 3: 1, 4: 0 };
+        const assessments = {
+            PHQ9: { title: "PHQ-9 (우울증 선별 도구)", colorClass: 'bg-indigo-600', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 일에 흥미나 즐거움이 거의 없었다.", "2. 기분이 가라앉거나, 우울하거나, 희망이 없다고 느꼈다.", "3. 잠들거나 계속 잠을 자는 데 어려움이 있거나, 너무 많이 잤다.", "4. 피곤하거나 기력이 거의 없었다.", "5. 식욕이 없거나 과식했다.", "6. 자신을 실패자라고 느끼거나, 자신이나 가족을 실망시켰다고 느꼈다.", "7. 신문 읽기나 TV 시청처럼 평소보다 느리게 움직이거나 말을 했고, 다른 사람들이 알아챌 정도였다. 또는 이와 반대로 너무 안절부절못해서 평소보다 많이 움직였다.", "8. 집중하기가 어렵다(예: 신문 읽기, TV 시청 시).", "9. 지난 2주 동안 이 문제들로 인해 직장/학업, 가정 생활, 또는 다른 사람들과의 관계에서 어려움이 있었다면 얼마나 심각했습니까?"].slice(0, 10) },
+            GAD7: { title: "GAD-7 (범불안장애 선별 도구)", colorClass: 'bg-teal-700', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 안절부절못하거나 평온하게 있을 수 없었다.", "2. 쉽게 짜증을 내거나 신경이 곤두서 있었다.", "3. 무엇인가 걱정하는 것을 멈출 수 없거나 조절할 수 없었다.", "4. 지나치게 걱정했다.", "5. 여러 가지 일에 대해 너무 걱정했다.", "6. 불안 때문에 휴식을 취하기 어려웠다.", "7. 너무 걱정되어서 잠들기가 어려웠다."] },
+            PSS: { title: "PSS-10 (지각된 스트레스 척도)", colorClass: 'bg-rose-600', options: responseOptionsPSS, questions: ["지난 한 달 동안, 다음 각 질문의 상황이 얼마나 자주 있었는지 응답해 주십시오. (10문항)", "1. 예기치 않은 일들 때문에 당황했던 적이 얼마나 자주 있었습니까?", "2. 생활의 중요한 일들을 통제할 수 없다고 느꼈던 적이 얼마나 자주 있었습니까?", "3. 신경이 예민해지고 스트레스를 받았다고 느꼈던 적이 얼마나 자주 있었습니까?", "4. 생활 속에서 일어나는 일들을 처리하는 데 효과적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "5. 당신에게 중요한 일들을 완벽하게 처리할 수 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "6. 당신이 통제할 수 없었던 일들 때문에 화가 났던 적이 얼마나 자주 있었습니까?", "7. 사소한 일들에 대해 성공적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "8. 쌓여 있는 일들을 잘 처리하고 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "9. 당신이 감당할 수 없을 정도로 많은 일들이 쌓여 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "10. 당신의 개인적인 일들이 계획대로 진행되고 있다고 느꼈던 적이 얼마나 자주 있었습니까?"], reverseIndices: [4, 5, 7, 8, 10] }
+        };
+
+        function toggleAppFeatures(enable) {
+            const buttons = document.querySelectorAll('#assessment-buttons button');
+            buttons.forEach(btn => btn.disabled = !enable);
+            const blocker = document.getElementById('auth-blocker');
+            const signoutButton = document.getElementById('signout-button');
+            if (enable) { blocker.classList.add('hidden'); signoutButton.classList.remove('hidden'); } 
+            else { blocker.classList.remove('hidden'); signoutButton.classList.add('hidden'); }
+        }
+        
+        function displayMessage(type, message) {
+            const box = document.getElementById('message-box');
+            const title = document.getElementById('message-title');
+            const text = document.getElementById('message-text');
+            box.className = 'px-4 py-3 rounded-xl mb-6'; title.className = 'font-bold'; text.className = 'block sm:inline';
+            if (type === 'error') { box.classList.add('bg-red-100', 'border', 'border-red-400', 'text-red-700'); title.textContent = '오류 발생:'; } 
+            else if (type === 'success') { box.classList.add('bg-blue-100', 'border', 'border-blue-400', 'text-blue-700'); title.textContent = '알림:'; } 
+            else { box.classList.add('bg-gray-100', 'border', 'border-gray-400', 'text-gray-700'); title.textContent = '정보:'; }
+            text.textContent = message; box.classList.remove('hidden'); setTimeout(() => box.classList.add('hidden'), 8000);
+        }
+
+        async function signInUser(email, password) {
+            showLoading(true);
+            try { await signInWithEmailAndPassword(auth, email, password); displayMessage('success', "로그인 성공!"); } 
+            catch (error) { console.error(error); displayMessage('error', `로그인 실패: ${error.message}`); } 
+            finally { showLoading(false); }
+        }
+
+        async function signUpUser(email, password) {
+            showLoading(true);
+            try { await createUserWithEmailAndPassword(auth, email, password); displayMessage('success', "회원가입 및 로그인 완료!"); } 
+            catch (error) { console.error(error); displayMessage('error', `회원가입 실패: ${error.message}`); } 
+            finally { showLoading(false); }
+        }
+        
+        function handleSignOut() {
+            showLoading(true);
+            signOut(auth).then(() => { displayMessage('success', "로그아웃되었습니다."); }).catch((error) => { displayMessage('error', "로그아웃 오류"); }).finally(() => { showLoading(false); });
+        }
+        
+        async function initFirebase() {
+            if (!firebaseConfig || !firebaseConfig.apiKey) {
+                document.getElementById('auth-status').textContent = '설정 오류';
+                displayMessage('error', "Firebase 설정을 확인해주세요."); toggleAppFeatures(false); return;
+            }
+            try {
+                setLogLevel('error'); app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app);
+                document.getElementById('auth-status').textContent = '로그인 대기 중...';
+                onAuthStateChanged(auth, (user) => {
+                    if (user) { userId = user.uid; document.getElementById('auth-status').textContent = `인증 완료`; document.getElementById('display-user-id').textContent = userId; toggleAppFeatures(true); setupRealtimeListener(); } 
+                    else { userId = null; document.getElementById('auth-status').textContent = '로그인 필요'; document.getElementById('display-user-id').textContent = '인증 필요'; toggleAppFeatures(false); updateCharts([]); updateSummary([]); }
+                });
+            } catch (error) { console.error(error); displayMessage('error', "Firebase 초기화 실패"); toggleAppFeatures(false); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const authForm = document.getElementById('auth-form');
+            const authSubmitButton = document.getElementById('auth-submit-button');
+            const authModeToggle = document.getElementById('auth-mode-toggle');
+            if(authForm) {
+                authForm.addEventListener('submit', function(e) { e.preventDefault(); const email = document.getElementById('auth-email').value; const password = document.getElementById('auth-password').value; const mode = authSubmitButton.dataset.mode; if (mode === 'signin') { signInUser(email, password); } else { signUpUser(email, password); } });
+                authModeToggle.addEventListener('click', function(e) { e.preventDefault(); if (authSubmitButton.dataset.mode === 'signin') { authSubmitButton.dataset.mode = 'signup'; authSubmitButton.textContent = '회원가입'; authModeToggle.textContent = '로그인 화면으로 돌아가기'; } else { authSubmitButton.dataset.mode = 'signin'; authSubmitButton.textContent = '로그인'; authModeToggle.textContent = '회원가입 하기'; } });
+            }
+            document.getElementById('signout-button').addEventListener('click', handleSignOut);
+            initFirebase();
+        });
+        
+        function getCollectionRef() {
+            if (!db || !userId) return null;
+            return collection(db, `artifacts/${appId}/users/${userId}/stress_trackers`);
+        }
+
+        function setupRealtimeListener() {
+            const colRef = getCollectionRef(); if (!colRef) return;
+            onSnapshot(colRef, (snapshot) => {
+                const results = []; snapshot.forEach((doc) => { results.push({ id: doc.id, ...doc.data() }); });
+                results.sort((a, b) => (a.timestamp ? a.timestamp.toDate() : 0) - (b.timestamp ? b.timestamp.toDate() : 0));
+                scaleData = results; updateCharts(scaleData); updateSummary(scaleData);
+            }, (error) => { console.error(error); displayMessage('error', "데이터 불러오기 오류"); });
+        }
+        
+        async function saveAssessmentResult(result) {
+            const colRef = getCollectionRef(); if (!colRef) { displayMessage('error', "로그인이 필요합니다."); return; }
+            showLoading(true);
+            try { await addDoc(colRef, { ...result, timestamp: serverTimestamp() }); displayMessage('success', "저장 완료!"); } 
+            catch (error) { console.error(error); displayMessage('error', "저장 실패"); } 
+            finally { showLoading(false); }
+        }
+        
+        function createOrUpdateChart(chartId, dataLabels, scoreData, config) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            let instance;
+            if (config.instance === 'phqChartInstance') instance = phqChartInstance;
+            else if (config.instance === 'gadChartInstance') instance = gadChartInstance;
+            else if (config.instance === 'pssChartInstance') instance = pssChartInstance;
+
+            if (instance) { instance.data.labels = dataLabels; instance.data.datasets[0].data = scoreData; 
+                instance.data.datasets[0].showLine = scoreData.filter(v => v !== null).length > 1;
+                instance.update(); return instance; 
+            }
+
+            const shouldShowLine = scoreData.filter(v => v !== null).length > 1;
+            const newInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dataLabels,
+                    datasets: [{
+                        label: config.label, data: scoreData, borderColor: config.color, backgroundColor: 'transparent',
+                        tension: 0.4, fill: false, pointBackgroundColor: '#E0F2FE', pointBorderColor: '#87CEFA', pointBorderWidth: 2, pointRadius: 5, pointHoverRadius: 7,
+                        showLine: shouldShowLine 
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                    elements: { line: { tension: 0.4 }, point: { pointStyle: 'circle' } },
+                    scales: { y: { beginAtZero: true, max: config.maxScore, title: { display: true, text: '점수' }, ticks: { precision: 0 } }, x: { type: 'category', title: { display: true, text: '측정 시점' }, ticks: { autoSkip: true, maxTicksLimit: 7 } } }
+                }
+            });
+            
+            if (config.instance === 'phqChartInstance') phqChartInstance = newInstance;
+            else if (config.instance === 'gadChartInstance') gadChartInstance = newInstance;
+            else if (config.instance === 'pssChartInstance') pssChartInstance = newInstance;
+            return newInstance;
+        }
+
+        function updateCharts(data) {
+            if (data.length === 0) {
+                document.getElementById('chart-caption').textContent = "데이터가 없습니다. 측정을 시작해 주세요!";
+                if(phqChartInstance) { phqChartInstance.destroy(); phqChartInstance = null; }
+                if(gadChartInstance) { gadChartInstance.destroy(); gadChartInstance = null; }
+                if(pssChartInstance) { pssChartInstance.destroy(); pssChartInstance = null; }
+                return;
+            }
+            document.getElementById('chart-caption').textContent = `총 ${data.length}건의 측정 기록이 있습니다.`;
+            const labels = data.map(item => {
+                if (item.timestamp) {
+                    const date = item.timestamp.toDate();
+                    const year = String(date.getFullYear()).slice(-2); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0');
+                    const hours = String(date.getHours()).padStart(2, '0'); const minutes = String(date.getMinutes()).padStart(2, '0');
+                    return `${year}/${month}/${day} ${hours}:${minutes}`;
+                } return 'N/A';
+            });
+            const phqScores = data.map(item => item.phq9 || null);
+            const gadScores = data.map(item => item.gad7 || null);
+            const pssScores = data.map(item => item.pss || null);
+            createOrUpdateChart(CHART_CONFIGS.PHQ9.id, labels, phqScores, CHART_CONFIGS.PHQ9);
+            createOrUpdateChart(CHART_CONFIGS.GAD7.id, labels, gadScores, CHART_CONFIGS.GAD7);
+            createOrUpdateChart(CHART_CONFIGS.PSS.id, labels, pssScores, CHART_CONFIGS.PSS);
+        }
+
+        function updateSummary(data) {
+            const latestScores = { phq9: '--', gad7: '--', pss: '--' };
+            for (let i = data.length - 1; i >= 0; i--) {
+                const item = data[i];
+                if (latestScores.phq9 === '--' && item.phq9 !== undefined) latestScores.phq9 = item.phq9;
+                if (latestScores.gad7 === '--' && item.gad7 !== undefined) latestScores.gad7 = item.gad7;
+                if (latestScores.pss === '--' && item.pss !== undefined) latestScores.pss = item.pss;
+                if (latestScores.phq9 !== '--' && latestScores.gad7 !== '--' && latestScores.pss !== '--') break;
+            }
+            document.getElementById('latest-phq').textContent = latestScores.phq9;
+            document.getElementById('latest-gad').textContent = latestScores.gad7;
+            document.getElementById('latest-pss').textContent = latestScores.pss;
+        }
+
+        let currentScale = '';
+        function openAssessmentModal(scale) {
+            if (!userId) { displayMessage('error', "로그인이 필요합니다."); return; }
+            currentScale = scale; const assessment = assessments[scale];
+            document.getElementById('scale-title').textContent = assessment.title.split(' ')[0];
+            const header = document.getElementById('modal-header');
+            ['bg-indigo-600', 'bg-teal-700', 'bg-rose-600'].forEach(c => header.classList.remove(c));
+            header.classList.add(assessment.colorClass);
+            const submitButton = document.getElementById('submit-assessment');
+            ['bg-indigo-600', 'bg-teal-700', 'bg-rose-600'].forEach(c => submitButton.classList.remove(c));
+            submitButton.classList.add(assessment.colorClass);
+            
+            const form = document.getElementById('assessment-form'); form.innerHTML = '';
+            let introText = `<p class="text-gray-600 mb-4">${assessment.questions[0]}</p>`; form.insertAdjacentHTML('beforeend', introText);
+            const questionsToRender = scale === 'PHQ9' ? assessment.questions.slice(1, 10) : assessment.questions.slice(1);
+            questionsToRender.forEach((questionText, index) => {
+                const qNum = index + 1;
+                let questionHtml = `<div class="mb-5 p-4 border border-gray-200 rounded-lg shadow-sm"><p class="font-semibold text-gray-800 mb-3">${questionText}</p><div class="space-y-2">`;
+                assessment.options.forEach(option => {
+                    const uniqueId = `${scale}-q${qNum}-v${option.value}`;
+                    questionHtml += `<label for="${uniqueId}" class="flex items-center p-2 bg-white rounded-md cursor-pointer hover:bg-gray-50 transition"><input type="radio" id="${uniqueId}" name="q${qNum}" value="${option.value}" required class="w-4 h-4 text-sky-600 border-gray-300 focus:ring-sky-600"><span class="ml-3 text-gray-700 text-sm">${option.text}</span></label>`;
+                });
+                questionHtml += `</div></div>`;
+                form.insertAdjacentHTML('beforeend', questionHtml);
+            });
+            document.getElementById('assessment-modal').classList.remove('hidden');
+        }
+
+        function closeAssessmentModal() { document.getElementById('assessment-modal').classList.add('hidden'); document.getElementById('assessment-form').reset(); }
+        function calculateScore(scale, formData) {
+            let totalScore = 0; const assessment = assessments[scale]; const numQuestionsForScoring = scale === 'PHQ9' ? 8 : assessment.questions.length - 1;
+            for (let i = 1; i <= numQuestionsForScoring; i++) {
+                const key = `q${i}`; const value = parseInt(formData.get(key));
+                if (isNaN(value)) { displayMessage('error', `'${i}번 질문'에 응답해 주세요.`); return null; }
+                if (scale === 'PSS' && assessment.reverseIndices.includes(i)) { totalScore += reverseScoreMap[value]; } else { totalScore += value; }
+            }
+            if (scale === 'PHQ9' && isNaN(parseInt(formData.get('q9')))) { displayMessage('error', `'9번 질문'에 응답해 주세요.`); return null; }
+            return totalScore;
+        }
+
+        // --- 중복 전송 방지 기능 추가 ---
+        document.getElementById('assessment-form').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+            
+            const submitButton = document.getElementById('submit-assessment');
+            submitButton.disabled = true; // 버튼 비활성화 (더블 클릭 방지)
+            const originalText = submitButton.textContent;
+            submitButton.textContent = '저장 중...';
+
+            const formData = new FormData(e.target);
+            const score = calculateScore(currentScale, formData); 
+            
+            if (score === null) {
+                // 점수 계산 실패 시 버튼 다시 활성화
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
+                return;
+            }
+            
+            const result = {}; 
+            if (currentScale === 'PHQ9') result.phq9 = score; 
+            else if (currentScale === 'GAD7') result.gad7 = score; 
+            else if (currentScale === 'PSS') result.pss = score;
+
+            await saveAssessmentResult(result);
+            
+            closeAssessmentModal();
+            // 모달이 닫히지만, 다음 열 때를 위해 버튼 상태 복구
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        });
+
+        document.getElementById('assessment-buttons').addEventListener('click', (e) => { const button = e.target.closest('button[data-scale]'); if (button) openAssessmentModal(button.dataset.scale); });
+        document.getElementById('cancel-assessment').addEventListener('click', closeAssessmentModal);
+        function showLoading(isLoading) { const loadingDiv = document.getElementById('loading-indicator'); if (isLoading) { loadingDiv.classList.remove('hidden'); } else { loadingDiv.classList.add('hidden'); } }
+    </script>
+</body>
+</html>
