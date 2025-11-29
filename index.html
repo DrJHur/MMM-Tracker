@@ -16,130 +16,134 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #ACCAB2; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-track { background-color: #f7f7f7; }
 
-        /* Background Gradient */
+        /* Background Gradient - Vintage Palette */
         body {
-            background: linear-gradient(135deg, #e6d6ff 0%, #d6ffe1 25%, #fff5d6 50%, #ffd6e6 75%);
+            background: linear-gradient(135deg, #E6F0E8 0%, #FFF8E6 100%);
             background-attachment: fixed; 
+            color: #78614D; /* Cafe Latte */
         }
         
-        /* Color Palette */
-        .phq-card-color, .gad-card-color, .pss-card-color { background-color: #f0f8ff; }
-        
-        /* Font */
         .font-sans { font-family: 'Pretendard Variable', Pretendard, sans-serif; }
-
-        /* Canvas Size */
         canvas { width: 100% !important; height: 100% !important; }
+
+        /* Custom Color Classes */
+        .text-cafelatte { color: #78614D; }
+        .border-cafelatte { border-color: #78614D; }
+        
+        .bg-darlington { background-color: #ACCAB2; }
+        .text-darlington { color: #ACCAB2; }
+        .hover-bg-darlington:hover { background-color: #9ABEA0; }
+
+        .bg-beeswax { background-color: #E9A752; }
+        .text-beeswax { color: #E9A752; }
+        .hover-bg-beeswax:hover { background-color: #D99642; }
+
+        .bg-grenadine { background-color: #D44726; }
+        .text-grenadine { color: #D44726; }
+        .hover-bg-grenadine:hover { background-color: #C03615; }
+        
+        /* Card Backgrounds (Lighter opacity) */
+        .card-darlington { background-color: rgba(172, 202, 178, 0.15); }
+        .card-beeswax { background-color: rgba(233, 167, 82, 0.15); }
+        .card-grenadine { background-color: rgba(212, 71, 38, 0.1); }
+        
+        .phq-card-color { background-color: rgba(172, 202, 178, 0.15); }
+        .gad-card-color { background-color: rgba(233, 167, 82, 0.15); }
+        .pss-card-color { background-color: rgba(212, 71, 38, 0.1); }
     </style>
 </head>
 <body class="font-sans min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
 
-    <!-- Main Container -->
-    <div id="app" class="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-2xl rounded-2xl p-6 md:p-10 border border-gray-100 relative z-10 my-8">
+    <div id="app" class="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-xl rounded-2xl p-6 md:p-10 border border-[#ACCAB2]/30 relative z-10 my-8">
 
-        <!-- Title Wrapper -->
         <div class="relative mb-8 pt-4"> 
-            <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center relative z-10">My Mind Mirror, MMM (음-)</h1>
-            <p class="text-sm text-gray-500 text-center relative z-10">1주일에 한 번은 검사를 진행하고, 음- 그렇구나,하고 자기 마음을 알아주세요.</p>
+            <h1 class="text-3xl font-bold text-cafelatte mb-2 text-center relative z-10">My Mind Mirror, MMM (음-)</h1>
+            <p class="text-sm text-cafelatte/80 text-center relative z-10">1주일에 한 번은 검사를 진행하고, 음- 그렇구나,하고 자기 마음을 알아주세요.</p>
         </div>
 
-        <!-- User Info -->
-        <div class="mb-6 flex justify-between items-center text-sm">
-            <div id="user-info" class="text-gray-600 flex items-center space-x-4">
-                <p>사용자 ID: <span id="display-user-id" class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">인증 필요</span></p>
-                <p class="mt-1">인증 상태: <span id="auth-status" class="font-semibold text-red-500">인증 로드 중...</span></p>
-                <button id="signout-button" class="hidden text-xs px-2 py-1 bg-red-400 text-white rounded-lg hover:bg-red-500 transition ml-4">로그아웃</button>
+        <div class="mb-6 flex justify-between items-center text-sm border-b border-gray-200 pb-4">
+            <div id="user-info" class="text-cafelatte flex items-center space-x-4">
+                <p>사용자 ID: <span id="display-user-id" class="font-mono text-xs bg-[#E6F0E8] px-2 py-1 rounded text-cafelatte">인증 필요</span></p>
+                <p>상태: <span id="auth-status" class="font-semibold text-grenadine">로드 중...</span></p>
+                <button id="signout-button" class="hidden text-xs px-3 py-1 bg-grenadine text-white rounded-lg hover:bg-[#C03615] transition ml-4 shadow-sm">로그아웃</button>
             </div>
-            <div id="loading-indicator" class="hidden flex items-center space-x-2 text-blue-500">
+            <div id="loading-indicator" class="hidden flex items-center space-x-2 text-beeswax">
                 <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 <span>처리 중...</span>
             </div>
         </div>
 
-        <!-- Login/Signup Form -->
-        <div id="auth-blocker" class="mb-6 p-6 bg-red-50 border border-red-300 rounded-xl">
-            <h3 class="font-bold text-lg text-red-700 mb-2">회원가입/로그인 필요</h3>
-            <p class="text-red-600 mb-4">개인 정보의 안전한 저장을 위해 이메일과 비밀번호로 회원가입, 로그인 해주세요.</p>
-            
+        <div id="auth-blocker" class="mb-8 p-6 bg-[#FFF8E6] border border-beeswax/30 rounded-xl shadow-sm">
+            <h3 class="font-bold text-lg text-cafelatte mb-2">회원가입/로그인 필요</h3>
+            <p class="text-cafelatte/80 mb-4 text-sm">개인 정보의 안전한 저장을 위해 이메일과 비밀번호로 회원가입, 로그인 해주세요.</p>
             <form id="auth-form">
-                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 text-gray-800">
-                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:ring-sky-500 focus:border-sky-500 text-gray-800">
+                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-3 mb-3 border border-[#ACCAB2] rounded-lg focus:ring-2 focus:ring-[#ACCAB2] focus:outline-none text-cafelatte bg-white/80 placeholder-cafelatte/50">
+                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-3 mb-4 border border-[#ACCAB2] rounded-lg focus:ring-2 focus:ring-[#ACCAB2] focus:outline-none text-cafelatte bg-white/80 placeholder-cafelatte/50">
                 <div class="flex justify-between items-center">
-                    <button type="submit" id="auth-submit-button" data-mode="signin" class="px-5 py-2 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 transition">로그인</button>
-                    <a href="#" id="auth-mode-toggle" class="text-sm text-sky-600 hover:text-sky-700 transition">회원가입 하기</a>
+                    <button type="submit" id="auth-submit-button" data-mode="signin" class="px-6 py-2 bg-beeswax text-white font-bold rounded-lg hover-bg-beeswax transition shadow-md">로그인</button>
+                    <a href="#" id="auth-mode-toggle" class="text-sm text-grenadine hover:underline transition font-medium">회원가입 하기</a>
                 </div>
             </form>
         </div>
 
-        <!-- Assessment Buttons -->
         <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <button data-scale="PHQ9" class="p-4 rounded-xl text-white font-semibold shadow-lg transition-transform transform hover:scale-[1.02] bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>PHQ-9 (우울) 측정</button>
-            <button data-scale="GAD7" class="p-4 rounded-xl text-white font-semibold shadow-lg transition-transform transform hover:scale-[1.02] bg-teal-700 hover:bg-teal-800 disabled:opacity-50 disabled:cursor-not-allowed" disabled>GAD-7 (불안) 측정</button>
-            <button data-scale="PSS" class="p-4 rounded-xl text-white font-semibold shadow-lg transition-transform transform hover:scale-[1.02] bg-rose-600 hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>PSS (스트레스) 측정</button>
+            <button data-scale="PHQ9" class="p-4 rounded-xl text-white font-bold shadow-md transition-transform transform hover:scale-[1.02] bg-darlington hover-bg-darlington disabled:opacity-50 disabled:cursor-not-allowed" disabled>PHQ-9 (우울) 측정</button>
+            <button data-scale="GAD7" class="p-4 rounded-xl text-white font-bold shadow-md transition-transform transform hover:scale-[1.02] bg-beeswax hover-bg-beeswax disabled:opacity-50 disabled:cursor-not-allowed" disabled>GAD-7 (불안) 측정</button>
+            <button data-scale="PSS" class="p-4 rounded-xl text-white font-bold shadow-md transition-transform transform hover:scale-[1.02] bg-grenadine hover-bg-grenadine disabled:opacity-50 disabled:cursor-not-allowed" disabled>PSS (스트레스) 측정</button>
         </div>
 
-        <!-- Message Box -->
-        <div id="message-box" class="hidden px-4 py-3 rounded-xl mb-6" role="alert">
-            <strong id="message-title" class="font-bold"></strong>
-            <span id="message-text" class="block sm:inline"></span>
+        <div id="message-box" class="hidden px-4 py-3 rounded-xl mb-6 shadow-sm" role="alert">
+            <strong id="message-title" class="font-bold"></strong> <span id="message-text"></span>
         </div>
 
-        <!-- Chart Section -->
-        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">나의 MMM (음-) 프로파일</h2>
-            <div id="chart-caption" class="text-center text-sm text-gray-500 mb-4">데이터가 없습니다. 측정을 시작해 주세요!</div>
-
-            <div class="space-y-8">
-                <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
-                    <h3 class="font-bold text-lg text-gray-800 mb-3">우울의 움직임 (PHQ-9)</h3>
+        <div class="bg-white p-6 rounded-xl border border-[#ACCAB2]/30 shadow-sm">
+            <h2 class="text-xl font-semibold text-cafelatte mb-6 text-center">나의 MMM (음-) 프로파일</h2>
+            <div id="chart-caption" class="text-center text-xs text-cafelatte/60 mb-4">데이터가 없습니다. 측정을 시작해 주세요!</div>
+            <div class="space-y-10">
+                <div class="p-5 rounded-xl bg-white border border-[#ACCAB2]/20 shadow-sm">
+                    <h3 class="font-bold text-lg text-darlington mb-3">우울의 움직임 (PHQ-9)</h3>
                     <div class="relative h-48 md:h-64"><canvas id="phqChart"></canvas></div>
                 </div>
-                <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
-                    <h3 class="font-bold text-lg text-gray-800 mb-3">불안의 움직임 (GAD-7)</h3>
+                <div class="p-5 rounded-xl bg-white border border-[#E9A752]/20 shadow-sm">
+                    <h3 class="font-bold text-lg text-beeswax mb-3">불안의 움직임 (GAD-7)</h3>
                     <div class="relative h-48 md:h-64"><canvas id="gadChart"></canvas></div>
                 </div>
-                <div class="p-4 rounded-lg bg-white shadow-md border border-gray-100">
-                    <h3 class="font-bold text-lg text-gray-800 mb-3">내가 느끼는 스트레스 (PSS)</h3>
+                <div class="p-5 rounded-xl bg-white border border-[#D44726]/20 shadow-sm">
+                    <h3 class="font-bold text-lg text-grenadine mb-3">내가 느끼는 스트레스 (PSS)</h3>
                     <div class="relative h-48 md:h-64"><canvas id="pssChart"></canvas></div>
                 </div>
             </div>
         </div>
 
-        <!-- Summary Section -->
         <div class="mt-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">최근 측정 요약</h2>
+            <h2 class="text-xl font-semibold text-cafelatte mb-4">최근 측정 요약</h2>
             <div id="latest-summary" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="p-4 phq-card-color rounded-xl shadow-md">
-                    <p class="font-bold text-lg text-gray-800">PHQ-9</p>
-                    <p class="text-3xl font-extrabold text-gray-900" id="latest-phq">--</p>
-                    <p class="text-sm text-gray-600">우울 점수 (최대 27점)</p>
+                <div class="p-5 card-darlington rounded-xl shadow-sm border border-[#ACCAB2]/20">
+                    <p class="font-bold text-lg text-darlington">PHQ-9</p>
+                    <p class="text-3xl font-extrabold text-cafelatte" id="latest-phq">--</p>
+                    <p class="text-xs text-cafelatte/70">우울 점수 (최대 27점)</p>
                 </div>
-                <div class="p-4 gad-card-color rounded-xl shadow-md">
-                    <p class="font-bold text-lg text-gray-800">GAD-7</p>
-                    <p class="text-3xl font-extrabold text-gray-900" id="latest-gad">--</p>
-                    <p class="text-sm text-gray-600">불안 점수 (최대 21점)</p>
+                <div class="p-5 card-beeswax rounded-xl shadow-sm border border-[#E9A752]/20">
+                    <p class="font-bold text-lg text-beeswax">GAD-7</p>
+                    <p class="text-3xl font-extrabold text-cafelatte" id="latest-gad">--</p>
+                    <p class="text-xs text-cafelatte/70">불안 점수 (최대 21점)</p>
                 </div>
-                <div class="p-4 pss-card-color rounded-xl shadow-md">
-                    <p class="font-bold text-lg text-gray-800">PSS</p>
-                    <p class="text-3xl font-extrabold text-gray-900" id="latest-pss">--</p>
-                    <p class="text-sm text-gray-600">지각된 스트레스 점수 (최대 40점)</p>
+                <div class="p-5 card-grenadine rounded-xl shadow-sm border border-[#D44726]/20">
+                    <p class="font-bold text-lg text-grenadine">PSS</p>
+                    <p class="text-3xl font-extrabold text-cafelatte" id="latest-pss">--</p>
+                    <p class="text-xs text-cafelatte/70">스트레스 점수 (최대 40점)</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Assessment Modal -->
-    <div id="assessment-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+    <div id="assessment-modal" class="hidden fixed inset-0 bg-[#78614D]/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300">
-            <div id="modal-header" class="p-6 text-white text-xl font-bold rounded-t-xl bg-indigo-600">
-                <span id="scale-title"></span> 측정
-            </div>
-            <div class="p-6 custom-scrollbar max-h-[70vh] overflow-y-auto">
-                <form id="assessment-form"></form>
-            </div>
-            <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
-                <button id="cancel-assessment" type="button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium transition">취소</button>
-                <button id="submit-assessment" type="submit" form="assessment-form" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold transition">결과 저장</button>
+            <div id="modal-header" class="p-6 text-white text-xl font-bold rounded-t-xl"><span id="scale-title"></span> 측정</div>
+            <div class="p-6 custom-scrollbar max-h-[70vh] overflow-y-auto"><form id="assessment-form"></form></div>
+            <div class="p-4 border-t border-gray-100 flex justify-end space-x-3 bg-gray-50">
+                <button id="cancel-assessment" type="button" class="px-4 py-2 bg-gray-200 text-cafelatte rounded-lg">취소</button>
+                <button id="submit-assessment" type="submit" form="assessment-form" class="px-4 py-2 text-white rounded-lg font-bold">결과 저장</button>
             </div>
         </div>
     </div>
@@ -150,7 +154,6 @@
         import { getFirestore, addDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = 'my-mind-mirror-mmm-prod'; 
-        // 사용자가 제공한 Firebase 설정 정보
         const firebaseConfig = {
             apiKey: "AIzaSyDJ5lpzMYtQP_TrfqXQDF9QTmAVYNU84kE",
             authDomain: "mmm-project-13fb3.firebaseapp.com",
@@ -166,9 +169,9 @@
         let scaleData = null;
         
         const CHART_COLORS = {
-            PHQ9: { color: 'rgb(79, 70, 229)', bgColor: 'transparent' }, // Indigo
-            GAD7: { color: 'rgb(13, 148, 136)', bgColor: 'transparent' }, // Teal
-            PSS: { color: 'rgb(225, 29, 72)', bgColor: 'transparent' } // Rose
+            PHQ9: { color: '#ACCAB2', bgColor: 'transparent' },
+            GAD7: { color: '#E9A752', bgColor: 'transparent' },
+            PSS: { color: '#D44726', bgColor: 'transparent' }
         };
 
         const CHART_CONFIGS = {
@@ -177,13 +180,14 @@
             PSS: { id: 'pssChart', label: 'PSS (스트레스)', maxScore: 40, prop: 'pss', instance: 'pssChartInstance', ...CHART_COLORS.PSS }
         };
 
-        const responseOptionsPHQGAD = [ { value: 0, text: "전혀 없음" }, { value: 1, text: "몇 일" }, { value: 2, text: "일주일에 반 이상" }, { value: 3, text: "거의 매일" }];
-        const responseOptionsPSS = [ { value: 0, text: "전혀 없다" }, { value: 1, text: "거의 없다" }, { value: 2, text: "때때로 있다" }, { value: 3, text: "자주 있다" }, { value: 4, text: "매우 자주 있다" }];
-        const reverseScoreMap = { 0: 4, 1: 3, 2: 2, 3: 1, 4: 0 };
+        const responseOptionsPHQGAD = [{value:0,text:"전혀 없음"},{value:1,text:"몇 일"},{value:2,text:"일주일에 반 이상"},{value:3,text:"거의 매일"}];
+        const responseOptionsPSS = [{value:0,text:"전혀 없다"},{value:1,text:"거의 없다"},{value:2,text:"때때로 있다"},{value:3,text:"자주 있다"},{value:4,text:"매우 자주 있다"}];
+        const reverseScoreMap = {0:4,1:3,2:2,3:1,4:0};
+        
         const assessments = {
-            PHQ9: { title: "PHQ-9 (우울증 선별 도구)", colorClass: 'bg-indigo-600', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 일에 흥미나 즐거움이 거의 없었다.", "2. 기분이 가라앉거나, 우울하거나, 희망이 없다고 느꼈다.", "3. 잠들거나 계속 잠을 자는 데 어려움이 있거나, 너무 많이 잤다.", "4. 피곤하거나 기력이 거의 없었다.", "5. 식욕이 없거나 과식했다.", "6. 자신을 실패자라고 느끼거나, 자신이나 가족을 실망시켰다고 느꼈다.", "7. 신문 읽기나 TV 시청처럼 평소보다 느리게 움직이거나 말을 했고, 다른 사람들이 알아챌 정도였다. 또는 이와 반대로 너무 안절부절못해서 평소보다 많이 움직였다.", "8. 집중하기가 어렵다(예: 신문 읽기, TV 시청 시).", "9. 지난 2주 동안 이 문제들로 인해 직장/학업, 가정 생활, 또는 다른 사람들과의 관계에서 어려움이 있었다면 얼마나 심각했습니까?"].slice(0, 10) },
-            GAD7: { title: "GAD-7 (범불안장애 선별 도구)", colorClass: 'bg-teal-700', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 안절부절못하거나 평온하게 있을 수 없었다.", "2. 쉽게 짜증을 내거나 신경이 곤두서 있었다.", "3. 무엇인가 걱정하는 것을 멈출 수 없거나 조절할 수 없었다.", "4. 지나치게 걱정했다.", "5. 여러 가지 일에 대해 너무 걱정했다.", "6. 불안 때문에 휴식을 취하기 어려웠다.", "7. 너무 걱정되어서 잠들기가 어려웠다."] },
-            PSS: { title: "PSS-10 (지각된 스트레스 척도)", colorClass: 'bg-rose-600', options: responseOptionsPSS, questions: ["지난 한 달 동안, 다음 각 질문의 상황이 얼마나 자주 있었는지 응답해 주십시오. (10문항)", "1. 예기치 않은 일들 때문에 당황했던 적이 얼마나 자주 있었습니까?", "2. 생활의 중요한 일들을 통제할 수 없다고 느꼈던 적이 얼마나 자주 있었습니까?", "3. 신경이 예민해지고 스트레스를 받았다고 느꼈던 적이 얼마나 자주 있었습니까?", "4. 생활 속에서 일어나는 일들을 처리하는 데 효과적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "5. 당신에게 중요한 일들을 완벽하게 처리할 수 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "6. 당신이 통제할 수 없었던 일들 때문에 화가 났던 적이 얼마나 자주 있었습니까?", "7. 사소한 일들에 대해 성공적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "8. 쌓여 있는 일들을 잘 처리하고 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "9. 당신이 감당할 수 없을 정도로 많은 일들이 쌓여 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "10. 당신의 개인적인 일들이 계획대로 진행되고 있다고 느꼈던 적이 얼마나 자주 있었습니까?"], reverseIndices: [4, 5, 7, 8, 10] }
+            PHQ9: { title: "PHQ-9 (우울증 선별 도구)", colorClass: 'bg-darlington', hoverClass: 'hover-bg-darlington', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 일에 흥미나 즐거움이 거의 없었다.", "2. 기분이 가라앉거나, 우울하거나, 희망이 없다고 느꼈다.", "3. 잠들거나 계속 잠을 자는 데 어려움이 있거나, 너무 많이 잤다.", "4. 피곤하거나 기력이 거의 없었다.", "5. 식욕이 없거나 과식했다.", "6. 자신을 실패자라고 느끼거나, 자신이나 가족을 실망시켰다고 느꼈다.", "7. 신문 읽기나 TV 시청처럼 평소보다 느리게 움직이거나 말을 했고, 다른 사람들이 알아챌 정도였다. 또는 이와 반대로 너무 안절부절못해서 평소보다 많이 움직였다.", "8. 집중하기가 어렵다(예: 신문 읽기, TV 시청 시).", "9. 지난 2주 동안 이 문제들로 인해 직장/학업, 가정 생활, 또는 다른 사람들과의 관계에서 어려움이 있었다면 얼마나 심각했습니까?"].slice(0, 10) },
+            GAD7: { title: "GAD-7 (범불안장애 선별 도구)", colorClass: 'bg-beeswax', hoverClass: 'hover-bg-beeswax', options: responseOptionsPHQGAD, questions: ["지난 2주 동안, 다음 문제들로 인해 얼마나 자주 불편을 겪으셨습니까?", "1. 안절부절못하거나 평온하게 있을 수 없었다.", "2. 쉽게 짜증을 내거나 신경이 곤두서 있었다.", "3. 무엇인가 걱정하는 것을 멈출 수 없거나 조절할 수 없었다.", "4. 지나치게 걱정했다.", "5. 여러 가지 일에 대해 너무 걱정했다.", "6. 불안 때문에 휴식을 취하기 어려웠다.", "7. 너무 걱정되어서 잠들기가 어려웠다."] },
+            PSS: { title: "PSS-10 (지각된 스트레스 척도)", colorClass: 'bg-grenadine', hoverClass: 'hover-bg-grenadine', options: responseOptionsPSS, questions: ["지난 한 달 동안, 다음 각 질문의 상황이 얼마나 자주 있었는지 응답해 주십시오. (10문항)", "1. 예기치 않은 일들 때문에 당황했던 적이 얼마나 자주 있었습니까?", "2. 생활의 중요한 일들을 통제할 수 없다고 느꼈던 적이 얼마나 자주 있었습니까?", "3. 신경이 예민해지고 스트레스를 받았다고 느꼈던 적이 얼마나 자주 있었습니까?", "4. 생활 속에서 일어나는 일들을 처리하는 데 효과적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "5. 당신에게 중요한 일들을 완벽하게 처리할 수 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "6. 당신이 통제할 수 없었던 일들 때문에 화가 났던 적이 얼마나 자주 있었습니까?", "7. 사소한 일들에 대해 성공적으로 대처한다고 느꼈던 적이 얼마나 자주 있었습니까?", "8. 쌓여 있는 일들을 잘 처리하고 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "9. 당신이 감당할 수 없을 정도로 많은 일들이 쌓여 있다고 느꼈던 적이 얼마나 자주 있었습니까?", "10. 당신의 개인적인 일들이 계획대로 진행되고 있다고 느꼈던 적이 얼마나 자주 있었습니까?"], reverseIndices: [4, 5, 7, 8, 10] }
         };
 
         function toggleAppFeatures(enable) {
@@ -199,10 +203,10 @@
             const box = document.getElementById('message-box');
             const title = document.getElementById('message-title');
             const text = document.getElementById('message-text');
-            box.className = 'px-4 py-3 rounded-xl mb-6'; title.className = 'font-bold'; text.className = 'block sm:inline';
-            if (type === 'error') { box.classList.add('bg-red-100', 'border', 'border-red-400', 'text-red-700'); title.textContent = '오류 발생:'; } 
-            else if (type === 'success') { box.classList.add('bg-blue-100', 'border', 'border-blue-400', 'text-blue-700'); title.textContent = '알림:'; } 
-            else { box.classList.add('bg-gray-100', 'border', 'border-gray-400', 'text-gray-700'); title.textContent = '정보:'; }
+            box.className = 'px-4 py-3 rounded-xl mb-6 shadow-sm'; title.className = 'font-bold'; text.className = 'block sm:inline';
+            if (type === 'error') { box.classList.add('bg-grenadine/10', 'border', 'border-grenadine/50', 'text-grenadine'); title.textContent = '오류 발생:'; } 
+            else if (type === 'success') { box.classList.add('bg-darlington/20', 'border', 'border-darlington', 'text-cafelatte'); title.textContent = '알림:'; } 
+            else { box.classList.add('bg-beeswax/20', 'border', 'border-beeswax', 'text-cafelatte'); title.textContent = '정보:'; }
             text.textContent = message; box.classList.remove('hidden'); setTimeout(() => box.classList.add('hidden'), 8000);
         }
 
@@ -293,7 +297,7 @@
                     labels: dataLabels,
                     datasets: [{
                         label: config.label, data: scoreData, borderColor: config.color, backgroundColor: 'transparent',
-                        tension: 0.4, fill: false, pointBackgroundColor: '#E0F2FE', pointBorderColor: '#87CEFA', pointBorderWidth: 2, pointRadius: 5, pointHoverRadius: 7,
+                        tension: 0.4, fill: false, pointBackgroundColor: config.color, pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 6, pointHoverRadius: 8,
                         showLine: shouldShowLine 
                     }]
                 },
@@ -355,21 +359,25 @@
             currentScale = scale; const assessment = assessments[scale];
             document.getElementById('scale-title').textContent = assessment.title.split(' ')[0];
             const header = document.getElementById('modal-header');
-            ['bg-indigo-600', 'bg-teal-700', 'bg-rose-600'].forEach(c => header.classList.remove(c));
+            ['bg-darlington', 'bg-beeswax', 'bg-grenadine'].forEach(c => header.classList.remove(c));
             header.classList.add(assessment.colorClass);
             const submitButton = document.getElementById('submit-assessment');
-            ['bg-indigo-600', 'bg-teal-700', 'bg-rose-600'].forEach(c => submitButton.classList.remove(c));
+            ['bg-darlington', 'bg-beeswax', 'bg-grenadine'].forEach(c => submitButton.classList.remove(c));
             submitButton.classList.add(assessment.colorClass);
             
+             const hoverClasses = ['hover-bg-darlington', 'hover-bg-beeswax', 'hover-bg-grenadine'];
+             hoverClasses.forEach(c => submitButton.classList.remove(c));
+             submitButton.classList.add(assessment.hoverClass);
+
             const form = document.getElementById('assessment-form'); form.innerHTML = '';
-            let introText = `<p class="text-gray-600 mb-4">${assessment.questions[0]}</p>`; form.insertAdjacentHTML('beforeend', introText);
+            let introText = `<p class="text-cafelatte mb-4">${assessment.questions[0]}</p>`; form.insertAdjacentHTML('beforeend', introText);
             const questionsToRender = scale === 'PHQ9' ? assessment.questions.slice(1, 10) : assessment.questions.slice(1);
             questionsToRender.forEach((questionText, index) => {
                 const qNum = index + 1;
-                let questionHtml = `<div class="mb-5 p-4 border border-gray-200 rounded-lg shadow-sm"><p class="font-semibold text-gray-800 mb-3">${questionText}</p><div class="space-y-2">`;
+                let questionHtml = `<div class="mb-5 p-4 border border-[#ACCAB2]/30 rounded-lg shadow-sm"><p class="font-semibold text-cafelatte mb-3">${questionText}</p><div class="space-y-2">`;
                 assessment.options.forEach(option => {
                     const uniqueId = `${scale}-q${qNum}-v${option.value}`;
-                    questionHtml += `<label for="${uniqueId}" class="flex items-center p-2 bg-white rounded-md cursor-pointer hover:bg-gray-50 transition"><input type="radio" id="${uniqueId}" name="q${qNum}" value="${option.value}" required class="w-4 h-4 text-sky-600 border-gray-300 focus:ring-sky-600"><span class="ml-3 text-gray-700 text-sm">${option.text}</span></label>`;
+                    questionHtml += `<label for="${uniqueId}" class="flex items-center p-2 bg-white rounded-md cursor-pointer hover:bg-[#E6F0E8] transition"><input type="radio" id="${uniqueId}" name="q${qNum}" value="${option.value}" required class="w-4 h-4 text-darlington border-darlington focus:ring-darlington"><span class="ml-3 text-cafelatte text-sm">${option.text}</span></label>`;
                 });
                 questionHtml += `</div></div>`;
                 form.insertAdjacentHTML('beforeend', questionHtml);
@@ -389,38 +397,29 @@
             return totalScore;
         }
 
-        // --- 중복 전송 방지 기능 추가 ---
         document.getElementById('assessment-form').addEventListener('submit', async function(e) {
             e.preventDefault(); 
-            
             const submitButton = document.getElementById('submit-assessment');
-            submitButton.disabled = true; // 버튼 비활성화 (더블 클릭 방지)
             const originalText = submitButton.textContent;
+            submitButton.disabled = true;
             submitButton.textContent = '저장 중...';
 
             const formData = new FormData(e.target);
             const score = calculateScore(currentScale, formData); 
             
             if (score === null) {
-                // 점수 계산 실패 시 버튼 다시 활성화
                 submitButton.disabled = false;
                 submitButton.textContent = originalText;
                 return;
             }
             
-            const result = {}; 
-            if (currentScale === 'PHQ9') result.phq9 = score; 
-            else if (currentScale === 'GAD7') result.gad7 = score; 
-            else if (currentScale === 'PSS') result.pss = score;
-
-            await saveAssessmentResult(result);
+            const result = {}; if (currentScale === 'PHQ9') result.phq9 = score; else if (currentScale === 'GAD7') result.gad7 = score; else if (currentScale === 'PSS') result.pss = score;
+            await saveAssessmentResult(result); 
             
             closeAssessmentModal();
-            // 모달이 닫히지만, 다음 열 때를 위해 버튼 상태 복구
             submitButton.disabled = false;
             submitButton.textContent = originalText;
         });
-
         document.getElementById('assessment-buttons').addEventListener('click', (e) => { const button = e.target.closest('button[data-scale]'); if (button) openAssessmentModal(button.dataset.scale); });
         document.getElementById('cancel-assessment').addEventListener('click', closeAssessmentModal);
         function showLoading(isLoading) { const loadingDiv = document.getElementById('loading-indicator'); if (isLoading) { loadingDiv.classList.remove('hidden'); } else { loadingDiv.classList.add('hidden'); } }
