@@ -21,7 +21,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #375D49; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-track { background-color: #F4E8C8; }
 
-        /* 전체 배경: 크림색, 텍스트: 짙은 녹색 */
+        /* 전체 배경: 이미지의 크림색 */
         body {
             background-color: #F4E8C8; 
             color: #375D49; 
@@ -32,38 +32,34 @@
 
         /* --- 커스텀 컬러 팔레트 --- */
         
-        /* 메인 텍스트/테두리 (짙은 녹색) */
+        /* 메인 텍스트 (다크 그린 #375D49) */
         .text-main { color: #375D49; }
-        .border-main { border-color: #375D49; }
-        .bg-main { background-color: #375D49; }
         
-        /* PHQ-9 (우울): 틸 블루 (#51A0AF) */
+        /* PHQ-9: 틸 블루 (#51A0AF) */
         .bg-teal-custom { background-color: #51A0AF; }
         .text-teal-custom { color: #51A0AF; }
-        /* 버튼: 틸 배경 + 흰색 글씨 */
         .btn-teal { background-color: #51A0AF; color: #FFFFFF; }
         .btn-teal:hover { background-color: #40808C; }
 
-        /* GAD-7 (불안): 머스타드 옐로우 (#FFD16D) */
+        /* GAD-7: 머스타드 옐로우 (#FFD16D) */
         .bg-mustard-custom { background-color: #FFD16D; }
-        .text-mustard-custom { color: #CCA450; } 
-        /* 버튼: 머스타드 배경 + 짙은 녹색 글씨 (가독성) */
+        .text-mustard-custom { color: #B88A00; } /* 가독성을 위해 텍스트는 조금 더 진하게 */
         .btn-mustard { background-color: #FFD16D; color: #375D49; } 
         .btn-mustard:hover { background-color: #E5BC62; }
 
-        /* PSS (스트레스): 빈티지 레드 (#CF4638) */
+        /* PSS: 빈티지 레드 (#CF4638) */
         .bg-red-custom { background-color: #CF4638; }
         .text-red-custom { color: #CF4638; }
-        /* 버튼: 레드 배경 + 흰색 글씨 */
         .btn-red { background-color: #CF4638; color: #FFFFFF; }
         .btn-red:hover { background-color: #A8382D; }
 
-        /* 몽환적인 테두리 효과 */
+        /* 몽환적인 그라데이션 테두리 효과 (요청하신 부분) */
         .dreamy-border {
             border: 5px solid transparent;
             border-radius: 1.5rem;
-            background-image: linear-gradient(#F4E8C8, #F4E8C8), 
-                              linear-gradient(45deg, #51A0AF, #FFD16D, #CF4638);
+            /* 핑크(#EFABB4), 노랑(#FFD16D), 틸(#51A0AF) 그라데이션 */
+            background-image: linear-gradient(#FDFBF7, #FDFBF7), 
+                              linear-gradient(45deg, #EFABB4, #FFD16D, #51A0AF);
             background-origin: border-box;
             background-clip: content-box, border-box;
             box-shadow: 0 10px 25px -5px rgba(55, 93, 73, 0.15);
@@ -71,10 +67,10 @@
     </style>
 </head>
 
+
     <body class="min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
 
-    <!-- 메인 컨테이너 -->
-    <div id="app" class="w-full max-w-4xl dreamy-border p-6 md:p-10 relative z-10 my-8 bg-[#F4E8C8]">
+    <div id="app" class="w-full max-w-4xl dreamy-border p-6 md:p-10 relative z-10 my-8 bg-[#FDFBF7]">
 
         <!-- 제목 -->
         <div class="relative mb-8 pt-2 text-center"> 
@@ -85,23 +81,20 @@
         <!-- 사용자 정보 -->
         <div class="mb-8 flex flex-col md:flex-row justify-between items-center text-sm border-b-2 border-[#375D49]/20 pb-4 gap-2">
             <div id="user-info" class="text-[#375D49] flex items-center gap-3 font-bold">
-                <p>ID: <span id="display-user-id" class="font-mono text-xs bg-white/50 px-2 py-1 rounded text-gray-500">인증 필요</span></p>
+                <p>ID: <span id="display-user-id" class="text-xs bg-[#F4E8C8] px-2 py-1 rounded text-[#375D49]">인증 필요</span></p>
                 <p>상태: <span id="auth-status" class="text-red-custom">로드 중...</span></p>
-                <button id="signout-button" class="hidden text-xs px-3 py-1 bg-[#375D49] text-white rounded hover:opacity-90 transition shadow-sm">로그아웃</button>
-            </div>
-            <div id="loading-indicator" class="hidden flex items-center gap-2 text-teal-custom font-bold">
-                <span>데이터 처리 중...</span>
+                <button id="signout-button" class="hidden text-xs px-3 py-1 bg-[#375D49] text-white rounded hover:opacity-90 transition shadow-sm font-bold">로그아웃</button>
             </div>
         </div>
 
         <!-- 로그인 폼 -->
-        <div id="auth-blocker" class="mb-10 p-8 bg-white/40 border-2 border-[#FFD16D] rounded-xl shadow-sm text-center">
+        <div id="auth-blocker" class="mb-10 p-8 bg-[#F4E8C8]/50 border-2 border-[#FFD16D] rounded-xl shadow-sm text-center">
             <h3 class="font-bold text-2xl text-[#375D49] mb-2">회원가입/로그인 필요</h3>
             <p class="text-[#375D49]/80 mb-6">개인 정보의 안전한 저장을 위해<br>이메일과 비밀번호로 회원가입, 로그인 해주세요.</p>
             
             <form id="auth-form" class="max-w-md mx-auto space-y-4">
-                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49]">
-                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49]">
+                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49] placeholder-gray-400 font-bold">
+                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49] placeholder-gray-400 font-bold">
                 <div class="flex gap-3 justify-center pt-2">
                     <button type="submit" id="auth-submit-button" data-mode="signin" class="flex-1 px-6 py-3 btn-teal font-bold rounded-lg shadow-md transition transform active:scale-95">로그인</button>
                     <a href="#" id="auth-mode-toggle" class="flex-1 px-6 py-3 border-2 border-[#51A0AF] text-[#51A0AF] font-bold rounded-lg hover:bg-[#51A0AF]/10 transition text-center flex items-center justify-center">회원가입 하기</a>
@@ -109,7 +102,7 @@
             </form>
         </div>
 
-        <!-- 측정 버튼들 -->
+        <!-- 측정 버튼 -->
         <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
             <button data-scale="PHQ9" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-teal disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 <span class="block text-lg">PHQ-9</span><span class="text-sm opacity-90 font-normal">(우울) 측정</span>
@@ -128,9 +121,9 @@
         </div>
 
         <!-- 차트 섹션 -->
-        <div class="bg-white/60 p-6 rounded-xl border-2 border-[#375D49]/10 shadow-inner">
+        <div class="bg-white p-6 rounded-xl border-2 border-[#375D49]/10 shadow-inner">
             <h2 class="text-2xl font-bold text-[#375D49] mb-6 text-center">나의 MMM (음-) 프로파일</h2>
-            <div id="chart-caption" class="text-center text-sm text-[#375D49]/60 mb-8">데이터가 없습니다. 측정을 시작해 주세요!</div>
+            <div id="chart-caption" class="text-center text-sm text-gray-500 mb-8">데이터가 없습니다. 측정을 시작해 주세요!</div>
 
             <div class="space-y-12">
                 <div class="p-5 rounded-xl bg-white border-l-4 border-[#51A0AF] shadow-sm">
@@ -152,27 +145,33 @@
         <div class="mt-10">
             <h2 class="text-2xl font-bold text-[#375D49] mb-6 text-center">최근 측정 요약</h2>
             <div id="latest-summary" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 rounded-xl shadow-md border-t-4 border-[#51A0AF] bg-white">
+                <div class="p-6 rounded-xl shadow-md border-t-4 border-[#51A0AF] bg-[#F0FDFA]">
                     <p class="font-bold text-lg text-teal-custom mb-2">PHQ-9</p>
-                    <p class="text-4xl font-extrabold text-[#375D49]" id="latest-phq">--</p>
-                    <p class="text-xs text-gray-500 mt-2">우울 점수 / 27</p>
+                    <div class="flex items-end gap-2">
+                        <p class="text-4xl font-extrabold text-[#375D49]" id="latest-phq">--</p>
+                        <p class="text-sm text-gray-500 mb-1">/ 27점</p>
+                    </div>
                 </div>
-                <div class="p-6 rounded-xl shadow-md border-t-4 border-[#FFD16D] bg-white">
+                <div class="p-6 rounded-xl shadow-md border-t-4 border-[#FFD16D] bg-[#FFFBEB]">
                     <p class="font-bold text-lg text-mustard-custom mb-2">GAD-7</p>
-                    <p class="text-4xl font-extrabold text-[#375D49]" id="latest-gad">--</p>
-                    <p class="text-xs text-gray-500 mt-2">불안 점수 / 21</p>
+                    <div class="flex items-end gap-2">
+                        <p class="text-4xl font-extrabold text-[#375D49]" id="latest-gad">--</p>
+                        <p class="text-sm text-gray-500 mb-1">/ 21점</p>
+                    </div>
                 </div>
-                <div class="p-6 rounded-xl shadow-md border-t-4 border-[#CF4638] bg-white">
+                <div class="p-6 rounded-xl shadow-md border-t-4 border-[#CF4638] bg-[#FFF1F2]">
                     <p class="font-bold text-lg text-red-custom mb-2">PSS</p>
-                    <p class="text-4xl font-extrabold text-[#375D49]" id="latest-pss">--</p>
-                    <p class="text-xs text-gray-500 mt-2">스트레스 점수 / 40</p>
+                    <div class="flex items-end gap-2">
+                        <p class="text-4xl font-extrabold text-[#375D49]" id="latest-pss">--</p>
+                        <p class="text-sm text-gray-500 mb-1">/ 40점</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 설문 모달 -->
-    <div id="assessment-modal" class="hidden fixed inset-0 bg-[#375D49]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <!-- 모달 -->
+    <div id="assessment-modal" class="hidden fixed inset-0 bg-[#375D49]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 font-vintage">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300 border-2 border-[#375D49]/10">
             <div id="modal-header" class="p-6 text-white text-xl font-bold"><span id="scale-title"></span> 측정</div>
             <div class="p-6 custom-scrollbar max-h-[70vh] overflow-y-auto"><form id="assessment-form"></form></div>
@@ -182,15 +181,13 @@
             </div>
         </div>
     </div>
-
-        <script type="module">
+    
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, addDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = 'my-mind-mirror-mmm-prod'; 
-        
-        // Firebase 설정
         const firebaseConfig = {
             apiKey: "AIzaSyDJ5lpzMYtQP_TrfqXQDF9QTmAVYNU84kE",
             authDomain: "mmm-project-13fb3.firebaseapp.com",
@@ -203,9 +200,8 @@
 
         let app, db, auth, userId = null;
         let phqChartInstance = null, gadChartInstance = null, pssChartInstance = null;
-        let scaleData = null;
         
-        // New Vivid Palette
+        // Vivid Palette Colors
         const CHART_COLORS = {
             PHQ9: { color: '#51A0AF', bgColor: 'transparent' }, 
             GAD7: { color: '#FFD16D', bgColor: 'transparent' }, 
@@ -243,8 +239,8 @@
             const text = document.getElementById('message-text');
             box.className = 'px-4 py-3 rounded-xl mb-6 shadow-sm text-center'; title.className = 'font-bold block mb-1'; text.className = 'block sm:inline';
             if (type === 'error') { box.classList.add('bg-[#CF4638]/10', 'border-2', 'border-[#CF4638]', 'text-[#CF4638]'); title.textContent = '오류 발생!'; } 
-            else if (type === 'success') { box.classList.add('bg-[#51A0AF]/20', 'border-2', 'border-[#51A0AF]', 'text-[#375D49]'); title.textContent = '성공!'; } 
-            else { box.classList.add('bg-[#FFD16D]/20', 'border-2', 'border-[#FFD16D]', 'text-[#375D49]'); title.textContent = '알림'; }
+            else if (type === 'success') { box.classList.add('bg-[#51A0AF]/20', 'border-2', 'border-[#51A0AF]', 'text-[#375D49]'); title.textContent = '알림'; } 
+            else { box.classList.add('bg-[#FFD16D]/20', 'border-2', 'border-[#FFD16D]', 'text-[#375D49]'); title.textContent = '정보'; }
             text.textContent = message; box.classList.remove('hidden'); setTimeout(() => box.classList.add('hidden'), 8000);
         }
 
@@ -304,7 +300,7 @@
             onSnapshot(colRef, (snapshot) => {
                 const results = []; snapshot.forEach((doc) => { results.push({ id: doc.id, ...doc.data() }); });
                 
-                // Smart Deduplication (1 min threshold)
+                // Smart Deduplication
                 results.sort((a, b) => (a.timestamp ? a.timestamp.toDate() : 0) - (b.timestamp ? b.timestamp.toDate() : 0));
                 const filteredResults = [];
                 let lastTime = 0;
@@ -316,7 +312,7 @@
                     }
                 });
 
-                scaleData = filteredResults; updateCharts(scaleData); updateSummary(scaleData);
+                updateCharts(filteredResults); updateSummary(filteredResults);
             }, (error) => { console.error(error); displayMessage('error', "데이터 불러오기 오류"); });
         }
         
@@ -338,6 +334,7 @@
             if (instance) { 
                 instance.data.labels = dataLabels; 
                 instance.data.datasets[0].data = scoreData;
+                // 데이터 포인트가 1개 초과일 때만 선 표시
                 instance.data.datasets[0].showLine = scoreData.filter(v => v !== null).length > 1;
                 instance.update(); 
                 return instance; 
@@ -494,3 +491,4 @@
     </script>
 </body>
 </html>
+
