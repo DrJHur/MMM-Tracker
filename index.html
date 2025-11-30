@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Mind Mirror (MMM)</title>
     
-    <!-- 폰트: Pretendard 볼드체 -->
+    <!-- 폰트: 고운 바탕 (빈티지 느낌) & 프리텐다드 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css" />
     
     <!-- Tailwind CSS -->
@@ -19,68 +22,60 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #375D49; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-track { background-color: #F4E8C8; }
 
-        /* 배경 및 폰트 */
+        /* 전체 배경: 이미지의 크림색, 텍스트: 다크 그린 */
         body {
-            /* 몽환적인 핑크-노랑-블루 그라데이션 배경 */
-            background: linear-gradient(120deg, #EFABB4, #FFD16D, #51A0AF);
-            background-attachment: fixed;
-            background-size: 200% 200%;
-            animation: gradientBG 15s ease infinite;
+            background-color: #F4E8C8; 
             color: #375D49; 
-            font-family: 'Pretendard', sans-serif;
-            font-weight: 700; 
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            font-family: 'Gowun Batang', serif;
         }
         
         canvas { width: 100% !important; height: 100% !important; }
 
         /* --- 커스텀 컬러 팔레트 --- */
+        
+        /* 메인 텍스트/테두리 (다크 그린 #375D49) */
         .text-main { color: #375D49; }
+        .border-main { border-color: #375D49; }
+        .bg-main { background-color: #375D49; }
         
         /* PHQ-9: 틸 블루 (#51A0AF) */
         .bg-teal-custom { background-color: #51A0AF; }
         .text-teal-custom { color: #51A0AF; }
+        .border-teal-custom { border-color: #51A0AF; }
         .btn-teal { background-color: #51A0AF; color: #FFFFFF; }
         .btn-teal:hover { background-color: #40808C; }
 
         /* GAD-7: 머스타드 옐로우 (#FFD16D) */
         .bg-mustard-custom { background-color: #FFD16D; }
         .text-mustard-custom { color: #E0B050; } 
+        .border-mustard-custom { border-color: #FFD16D; }
         .btn-mustard { background-color: #FFD16D; color: #375D49; } 
         .btn-mustard:hover { background-color: #E5BC62; }
 
-        /* PSS: 빈티지 레드 (#CF4638) */
-        .bg-red-custom { background-color: #CF4638; color: #FFFFFF; }
+        /* PSS: 빈티지 레드 (#CF4638) - 이미지의 붉은 톤 */
+        .bg-red-custom { background-color: #CF4638; }
         .text-red-custom { color: #CF4638; }
+        .border-red-custom { border-color: #CF4638; }
         .btn-red { background-color: #CF4638; color: #FFFFFF; }
         .btn-red:hover { background-color: #A8382D; }
         
-        /* 공통 버튼 스타일 */
-        .btn-vivid {
-            border: 2px solid #375D49;
-            box-shadow: 4px 4px 0px #375D49;
-            transition: all 0.2s;
-        }
-        .btn-vivid:hover { transform: translateY(-2px); }
-        .btn-vivid:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #375D49; }
-
-        /* 컨테이너 스타일 */
-        .app-container {
+        /* 테두리 효과 */
+        .dreamy-border {
             border: 4px solid #375D49;
             border-radius: 1.5rem;
             box-shadow: 8px 8px 0px rgba(55, 93, 73, 0.2);
         }
+        
+        /* 차트 카드 배경색 */
+        .phq-card-color { background-color: rgba(81, 160, 175, 0.1); }
+        .gad-card-color { background-color: rgba(255, 209, 109, 0.2); }
+        .pss-card-color { background-color: rgba(207, 70, 56, 0.1); }
     </style>
 </head>
 <body class="min-h-screen flex justify-center p-4 relative overflow-y-auto">
 
-    <!-- 메인 컨테이너 (max-w-4xl 유지) -->
-    <div id="app" class="w-full max-w-4xl app-container p-6 md:p-10 relative z-10 my-8 bg-[#FDFBF7] shadow-xl">
+    <!-- 메인 컨테이너 -->
+    <div id="app" class="w-full max-w-4xl dreamy-border p-6 md:p-10 relative z-10 my-8 bg-[#FDFBF7]">
 
         <!-- 제목 -->
         <div class="relative mb-8 pt-2 text-center"> 
@@ -107,8 +102,8 @@
             <p class="text-[#375D49]/80 mb-6">개인 정보의 안전한 저장을 위해<br>이메일과 비밀번호로 회원가입, 로그인 해주세요.</p>
             
             <form id="auth-form" class="max-w-md mx-auto space-y-4">
-                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49] placeholder-gray-400 font-bold">
-                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49] placeholder-gray-400 font-bold">
+                <input type="email" id="auth-email" placeholder="이메일 주소" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49] placeholder-main/40 font-bold">
+                <input type="password" id="auth-password" placeholder="비밀번호 (6자 이상)" required class="w-full p-3 border-2 border-[#375D49]/30 rounded-lg focus:ring-2 focus:ring-[#51A0AF] focus:outline-none bg-white text-[#375D49] placeholder-main/40 font-bold">
                 <div class="flex gap-3 justify-center pt-2">
                     <button type="submit" id="auth-submit-button" data-mode="signin" class="px-6 py-2 btn-teal font-bold rounded-lg shadow-md transition transform active:scale-95 flex-1">로그인</button>
                     <a href="#" id="auth-mode-toggle" class="px-6 py-2 border-2 border-[#51A0AF] text-[#51A0AF] font-bold rounded-lg hover:bg-[#51A0AF]/10 transition text-center flex items-center justify-center flex-1">회원가입 하기</a>
@@ -118,13 +113,13 @@
 
         <!-- 측정 버튼 영역 -->
         <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-            <button data-scale="PHQ9" class="p-4 rounded-xl font-bold btn-vivid btn-teal disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <button data-scale="PHQ9" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-teal btn-vivid disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 <span class="block text-lg">PHQ-9</span><span class="text-sm opacity-90 font-normal">(우울) 측정</span>
             </button>
-            <button data-scale="GAD7" class="p-4 rounded-xl font-bold btn-vivid btn-mustard disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <button data-scale="GAD7" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-mustard btn-vivid disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 <span class="block text-lg">GAD-7</span><span class="text-sm opacity-90 font-normal">(불안) 측정</span>
             </button>
-            <button data-scale="PSS" class="p-4 rounded-xl font-bold btn-vivid btn-red disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <button data-scale="PSS" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-red btn-vivid disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 <span class="block text-lg">PSS</span><span class="text-sm opacity-90 font-normal">(스트레스) 측정</span>
             </button>
         </div>
