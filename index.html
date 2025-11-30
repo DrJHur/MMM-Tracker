@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Mind Mirror (MMM)</title>
     
-    <!-- 폰트: 고운 바탕 (빈티지 느낌) & 프리텐다드 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css" />
+    <!-- 폰트 관련 링크 및 CDN 삭제됨 -->
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -30,8 +26,7 @@
             background-size: 200% 200%;
             animation: gradientBG 15s ease infinite;
             color: #375D49; 
-            font-family: 'Pretendard', sans-serif; /* 프리텐다드 적용 */
-            font-weight: 700; /* 볼드체 적용 */
+            /* 폰트 관련 속성 모두 제거 (시스템 기본 폰트 사용) */
         }
 
         @keyframes gradientBG {
@@ -95,7 +90,7 @@
         <!-- 사용자 정보 -->
         <div class="mb-8 flex flex-col md:flex-row justify-between items-center text-sm border-b-2 border-[#375D49]/20 pb-4 gap-2">
             <div id="user-info" class="text-[#375D49] flex items-center gap-3 font-bold">
-                <p>ID: <span id="display-user-id" class="font-mono text-xs bg-[#F4E8C8] px-2 py-1 rounded text-[#375D49]">인증 필요</span></p>
+                <p>ID: <span id="display-user-id" class="text-xs bg-[#F4E8C8] px-2 py-1 rounded text-[#375D49]">인증 필요</span></p>
                 <p>상태: <span id="auth-status" class="text-red-custom">로드 중...</span></p>
                 <button id="signout-button" class="hidden text-xs px-3 py-1 bg-[#375D49] text-white rounded hover:opacity-90 transition shadow-sm font-bold">로그아웃</button>
             </div>
@@ -122,13 +117,13 @@
 
         <!-- 측정 버튼 영역 -->
         <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-            <button data-scale="PHQ9" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-teal btn-vivid disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <button data-scale="PHQ9" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-teal btn-vivid disabled:opacity-50 disabled:cursor-not-allowed">
                 <span class="block text-lg">PHQ-9</span><span class="text-sm opacity-90 font-normal">(우울) 측정</span>
             </button>
-            <button data-scale="GAD7" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-mustard btn-vivid disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <button data-scale="GAD7" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-mustard btn-vivid disabled:opacity-50 disabled:cursor-not-allowed">
                 <span class="block text-lg">GAD-7</span><span class="text-sm opacity-90 font-normal">(불안) 측정</span>
             </button>
-            <button data-scale="PSS" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-red btn-vivid disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <button data-scale="PSS" class="p-4 rounded-xl font-bold shadow-md transition-transform transform hover:scale-[1.02] btn-red btn-vivid disabled:opacity-50 disabled:cursor-not-allowed">
                 <span class="block text-lg">PSS</span><span class="text-sm opacity-90 font-normal">(스트레스) 측정</span>
             </button>
         </div>
