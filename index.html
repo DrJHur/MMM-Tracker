@@ -31,7 +31,7 @@
             animation: gradientBG 15s ease infinite;
             color: #375D49; 
             font-family: 'Gowun Batang', serif; /* 레트로 폰트 */
-            font-weight: 400; /* 폰트 굵기 */
+            font-weight: 400; 
         }
 
         @keyframes gradientBG {
@@ -42,10 +42,9 @@
         
         canvas { width: 100% !important; height: 100% !important; }
 
-        /* --- 커스텀 컬러 팔레트 및 버튼 스타일 --- */
-        
-        /* 메인 텍스트/테두리 (다크 그린 #375D49) */
+        /* --- 커스텀 컬러 팔레트 --- */
         .text-main { color: #375D49; }
+        .border-main { border-color: #375D49; }
         
         /* PHQ-9: 틸 블루 (#51A0AF) */
         .bg-teal-custom { background-color: #51A0AF; }
@@ -67,7 +66,7 @@
         
         /* 공통 버튼 스타일 */
         .btn-vivid {
-            border: 2px solid #375D49; /* 검정 테두리 요청 반영 */
+            border: 2px solid #375D49; 
             box-shadow: 4px 4px 0px #375D49;
             transition: all 0.2s;
         }
@@ -121,7 +120,7 @@
             </form>
         </div>
 
-        <!-- 측정 버튼 영역 (레트로 디자인 적용) -->
+        <!-- 측정 버튼 영역 -->
         <div id="assessment-buttons" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
             <button data-scale="PHQ9" class="p-4 rounded-xl font-bold btn-vivid btn-teal disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 <span class="block text-lg">PHQ-9</span><span class="text-sm opacity-90 font-normal">(우울) 측정</span>
