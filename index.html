@@ -324,7 +324,6 @@
                 const results = []; snapshot.forEach((doc) => { results.push({ id: doc.id, ...doc.data() }); });
                 results.sort((a, b) => (a.timestamp ? a.timestamp.toDate() : 0) - (b.timestamp ? b.timestamp.toDate() : 0));
                 
-                // 쿨타임 로직 제거 완료
                 scaleData = results; 
                 updateCharts(scaleData); 
                 updateSummary(scaleData);
